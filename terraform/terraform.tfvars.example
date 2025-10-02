@@ -1,0 +1,22 @@
+# ===== TERRAFORM VARIABLES =====
+# Copie este arquivo para terraform.tfvars e preencha com suas credenciais
+# NUNCA commite o arquivo terraform.tfvars (já está no .gitignore)
+
+project_name = "ecommerce-certificado"
+environment  = "prod"
+aws_region   = "us-east-1"
+
+# Domínio customizado (deixe vazio se não tiver)
+domain_name = ""
+
+# ===== CREDENCIAIS SAFE2PAY =====
+safe2pay_token      = "SEU_TOKEN_SAFE2PAY"
+safe2pay_secret_key = "SEU_SECRET_KEY_SAFE2PAY"
+
+# ===== CREDENCIAIS SAFEWEB =====
+safeweb_username        = "SEU_USERNAME_SAFEWEB"
+safeweb_password        = "SEU_PASSWORD_SAFEWEB"
+safeweb_cnpj_ar         = "SEU_CNPJ_AR"
+safeweb_codigo_parceiro = "SEU_CODIGO_PARCEIRO"
+safeweb_produto_ecpf_a1 = "37341"
+safeweb_produto_ecnpj_a1 = "37342"
