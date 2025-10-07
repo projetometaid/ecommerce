@@ -9,8 +9,8 @@ resource "aws_cloudfront_distribution" "frontend" {
   price_class         = "PriceClass_100" # USA, Canadá, Europa (mais barato)
   comment             = "${var.project_name} - ${var.environment}"
 
-  # Aliases (domínio customizado) - descomente quando tiver domínio
-  # aliases = var.domain_name != "" ? [var.domain_name] : []
+  # Aliases (domínio customizado)
+  aliases = var.domain_name != "" ? [var.domain_name] : []
 
   # Origin: S3 Frontend
   origin {
@@ -86,11 +86,9 @@ resource "aws_cloudfront_distribution" "frontend" {
 
   # Certificado SSL
   viewer_certificate {
-    cloudfront_default_certificate = true
-    # Para domínio customizado, use ACM:
-    # acm_certificate_arn      = aws_acm_certificate.cert.arn
-    # ssl_support_method       = "sni-only"
-    # minimum_protocol_version = "TLSv1.2_2021"
+    acm_certificate_arn      = "arn:aws:acm:us-east-1:099670158004:certificate/0b7078c3-66fd-4531-a6d0-f9298273d421"
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
   # Página de erro customizada (SPA routing)

@@ -31,6 +31,7 @@ ALLOWED_ORIGINS = [
     'http://127.0.0.1:8080',  # Desenvolvimento alternativo
     'http://127.0.0.1:5500',  # Live Server (VS Code)
     'http://localhost:5500',  # Live Server alternativo
+    'http://127.0.0.1:56859',  # VSCode Live Server (porta dinâmica)
 ]
 
 # Configurar logging estruturado

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Certificado Digital e-CPF e e-CNPJ A1. Segurança e praticidade para suas transações digitais.">
+    <meta name="theme-color" content="#7C4DFF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CertDigital">
+    <title>Certificado Digital - e-CPF e e-CNPJ A1</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Preconnect to external resources for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://unpkg.com">
+
+    <!-- Critical CSS inline -->
+    <style>
+        /* Critical above-the-fold styles */
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth;font-size:16px}
+        body{font-family:system-ui,-apple-system,sans-serif;line-height:1.6;color:#E0E0E0;background:#F6FAFF;overflow-x:hidden}
+        .header{position:fixed;top:0;left:0;width:100%;background:rgba(30,0,76,0.95);backdrop-filter:blur(10px);z-index:1000;box-shadow:0 2px 16px rgba(0,0,0,0.1)}
+        .hero{background:linear-gradient(135deg,#1E004C 0%,#2B006B 100%);padding:140px 0 64px;position:relative}
+        .container{max-width:1200px;margin:0 auto;padding:0 24px}
+        @font-face{font-family:Poppins;font-style:normal;font-weight:400;font-display:swap;src:local('')}
+    </style>
+
+    <!-- Google Fonts - Poppins with font-display swap to prevent FOIT -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
+
+    <!-- Preload primary font file to reduce CLS -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrJJfecnFHGPc.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Main CSS - Non-blocking load (minified for production) -->
+    <link rel="preload" href="assets/css/style.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="assets/css/style.min.css"></noscript>
+
+    <!-- Dropdown Menu CSS -->
+    <link rel="stylesheet" href="assets/css/dropdown-menu.css">
+
+    <!-- Lucide Icons - Async load with fallback -->
+    <link rel="preload" href="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" as="script">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+
+    <!-- Load Components Script -->
+    <script src="assets/js/load-components.js" defer></script>
+</head>
+<body>
+
+    <!-- ========== HEADER ========== -->
+    <div id="header-container"></div>
+
+    <main>
+
+        <!-- ========== HERO SECTION ========== -->
+        <section class="hero" id="inicio">
+            <div class="container">
+                <div class="hero-content">
+                    <span class="hero-label">Certificação Digital Confiável</span>
+                    <h1 class="hero-title">Seu Certificado Digital em Minutos</h1>
+                    <p class="hero-subtitle">Emita e-CPF ou e-CNPJ A1 com segurança, praticidade e validade jurídica. Assine documentos, acesse sistemas governamentais e impulsione seu negócio.</p>
+
+                    <div class="hero-cta">
+                        <a href="#certificados" class="btn btn-primary btn-large" aria-label="Comprar certificado digital">
+                            <i data-lucide="shield-check" width="20" height="20"></i>
+                            Comprar Certificado
+                        </a>
+                        <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-large" aria-label="Falar com especialista via WhatsApp">
+                            <i data-lucide="message-circle" width="20" height="20"></i>
+                            Fale com um Especialista
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-image">
+                    <div class="hero-card">
+                        <svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="80" cy="80" r="70" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                            <path d="M80 30L110 50V90L80 110L50 90V50L80 30Z" fill="white" opacity="0.9"/>
+                            <circle cx="80" cy="70" r="15" fill="#7C4DFF"/>
+                            <rect x="65" y="90" width="30" height="4" rx="2" fill="#7C4DFF"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========== BENEFÍCIOS SECTION ========== -->
+        <section class="benefits" id="beneficios">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Por que escolher</span>
+                    <h2 class="section-title">Benefícios do Certificado Digital</h2>
+                </div>
+
+                <div class="benefits-grid">
+                    <!-- Benefit Card 1 -->
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i data-lucide="shield" width="48" height="48" stroke="#7C4DFF" stroke-width="2"></i>
+                        </div>
+                        <h3 class="benefit-title">Máxima Segurança</h3>
+                        <p class="benefit-text">Criptografia de última geração garante a proteção total de suas transações e documentos digitais.</p>
+                    </div>
+
+                    <!-- Benefit Card 2 -->
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i data-lucide="badge-check" width="48" height="48" stroke="#00C853" stroke-width="2"></i>
+                        </div>
+                        <h3 class="benefit-title">Validade Jurídica</h3>
+                        <p class="benefit-text">Certificado ICP-Brasil com total validade legal para assinatura de contratos e documentos oficiais.</p>
+                    </div>
+
+                    <!-- Benefit Card 3 -->
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i data-lucide="zap" width="48" height="48" stroke="#FF9800" stroke-width="2"></i>
+                        </div>
+                        <h3 class="benefit-title">Rapidez & Praticidade</h3>
+                        <p class="benefit-text">Emissão em minutos, sem burocracias. Assine documentos de qualquer lugar, a qualquer hora.</p>
+                    </div>
+
+                    <!-- Benefit Card 4 -->
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i data-lucide="globe" width="48" height="48" stroke="#7C4DFF" stroke-width="2"></i>
+                        </div>
+                        <h3 class="benefit-title">Acesso Governamental</h3>
+                        <p class="benefit-text">Utilize em sistemas da Receita Federal, e-CAC, INSS, Gov.br e diversos portais públicos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== CERTIFICADOS SECTION ========== -->
+        <section class="certificates" id="certificados">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label" id="ecpf">Planos disponíveis</span>
+                    <h2 class="section-title">Escolha seu Certificado</h2>
+                    <p class="section-description">Certificados tipo A1 com validade de 1 ano. Armazenamento seguro em computador.</p>
+                </div>
+
+                <div class="certificates-grid">
+
+                    <!-- e-CPF Card -->
+                    <div class="certificate-card">
+                        <div class="certificate-badge">Pessoa Física</div>
+                        <h3 class="certificate-name">e-CPF A1</h3>
+                        <p class="certificate-description">Ideal para pessoas físicas que precisam assinar documentos e acessar serviços digitais governamentais.</p>
+
+                        <div class="certificate-price">
+                            <span class="price-currency">R$</span>
+                            <span class="price-value">149</span>
+                            <span class="price-period">/ano</span>
+                        </div>
+
+                        <ul class="certificate-features">
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Validade de 1 ano
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Assinatura digital ilimitada
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Acesso e-CAC e Gov.br
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Suporte técnico incluso
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Emissão em até 24h
+                            </li>
+                        </ul>
+
+                        <a href="e-cpf.html" class="btn btn-primary btn-block" aria-label="Comprar e-CPF A1">Comprar e-CPF</a>
+                    </div>
+
+                    <!-- e-CNPJ Card -->
+                    <div class="certificate-card certificate-card-featured" id="ecnpj">
+                        <div class="certificate-featured-badge">Mais Vendido</div>
+                        <div class="certificate-badge">Pessoa Jurídica</div>
+                        <h3 class="certificate-name">e-CNPJ A1</h3>
+                        <p class="certificate-description">Perfeito para empresas que necessitam emitir notas fiscais, acessar sistemas públicos e assinar documentos corporativos.</p>
+
+                        <div class="certificate-price">
+                            <span class="price-currency">R$</span>
+                            <span class="price-value">249</span>
+                            <span class="price-period">/ano</span>
+                        </div>
+
+                        <ul class="certificate-features">
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Validade de 1 ano
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Emissão de NF-e ilimitada
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Conectividade Social (e-Social)
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                SPED, DCTF e EFD-Reinf
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Suporte prioritário 24/7
+                            </li>
+                            <li>
+                                <i data-lucide="check-circle" width="20" height="20" stroke="#00C853"></i>
+                                Emissão em até 12h
+                            </li>
+                        </ul>
+
+                        <a href="e-cnpj.html" class="btn btn-primary btn-block" aria-label="Comprar e-CNPJ A1">Comprar e-CNPJ</a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== GOOGLE REVIEWS SECTION ========== -->
+        <section class="reviews" id="reviews">
+            <div class="container">
+                <div class="reviews-header">
+                    <picture>
+                        <source srcset="/assets/images/google/Google-Reviews.avif" type="image/avif">
+                        <img src="/assets/images/google/Google-Reviews.png"
+                             alt="Google Reviews"
+                             class="reviews-logo"
+                             height="120"
+                             loading="lazy">
+                    </picture>
+
+                    <div class="reviews-rating">
+                        <a href="https://www.google.com/maps/place/Certificado+Digital+Campinas/@-22.8866637,-47.0805579,17z/data=!3m1!4b1!4m6!3m5!1s0x94c8c61fd971e243:0xb89c90e5c4d918d9!8m2!3d-22.8866637!4d-47.077983!16s%2Fg%2F11b8229mh6?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="reviews-kpi"
+                           aria-label="Ver todas as 8.881 avaliações no Google">
+                            <span class="kpi-indicator" aria-hidden="true"></span>
+                            Ver todas as 8.881 avaliações
+                        </a>
+                    </div>
+                </div>
+
+                <div class="reviews-grid">
+                    <!-- Review Card 1 -->
+                    <article class="review-card">
+                        <h3 class="review-author">Pedro Moreira</h3>
+                        <p class="review-text">"Atendimento atencioso e ágil. Fiz 3 certificados em 30min. Parabéns!"</p>
+                        <div class="review-stars" aria-label="5 de 5 estrelas" role="img">
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                        </div>
+                        <div class="review-footer">
+                            <picture>
+                                <source srcset="/assets/images/google/logo_g_google.avif" type="image/avif">
+                                <img src="/assets/images/google/logo_g_google.png"
+                                     alt="Google"
+                                     width="20"
+                                     height="20"
+                                     loading="lazy">
+                            </picture>
+                            <span>Comentário no Google</span>
+                        </div>
+                    </article>
+
+                    <!-- Review Card 2 -->
+                    <article class="review-card">
+                        <h3 class="review-author">Luiz Laranjeira</h3>
+                        <p class="review-text">"Muito seguro e didático. Explicaram tudo com calma. Recomendo!"</p>
+                        <div class="review-stars" aria-label="5 de 5 estrelas" role="img">
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                        </div>
+                        <div class="review-footer">
+                            <picture>
+                                <source srcset="/assets/images/google/logo_g_google.avif" type="image/avif">
+                                <img src="/assets/images/google/logo_g_google.png"
+                                     alt="Google"
+                                     width="20"
+                                     height="20"
+                                     loading="lazy">
+                            </picture>
+                            <span>Comentário no Google</span>
+                        </div>
+                    </article>
+
+                    <!-- Review Card 3 -->
+                    <article class="review-card">
+                        <h3 class="review-author">Denise M.</h3>
+                        <p class="review-text">"Processo tranquilo e instalação guiada. Excelente suporte!"</p>
+                        <div class="review-stars" aria-label="5 de 5 estrelas" role="img">
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                        </div>
+                        <div class="review-footer">
+                            <picture>
+                                <source srcset="/assets/images/google/logo_g_google.avif" type="image/avif">
+                                <img src="/assets/images/google/logo_g_google.png"
+                                     alt="Google"
+                                     width="20"
+                                     height="20"
+                                     loading="lazy">
+                            </picture>
+                            <span>Comentário no Google</span>
+                        </div>
+                    </article>
+                </div>
+
+                <p class="reviews-achievement">
+                    Fomos a primeira empresa do nosso segmento a alcançar 1.000 avaliações 5 estrelas — e seguimos como referência nacional, com o maior número de avaliações e a melhor média do Brasil.
+                </p>
+            </div>
+        </section>
+
+        <!-- ========== CTA WHATSAPP SECTION ========== -->
+        <section class="cta-whatsapp" id="contato">
+            <div class="container">
+                <div class="cta-banner" role="banner">
+                    <div class="cta-banner-content">
+                        <h2 class="cta-banner-headline">Ainda tem dúvidas sobre como adquirir seu Certificado Digital?</h2>
+                        <p class="cta-banner-subheadline">Fale agora com um especialista e não se preocupe, o contato é 100% gratuito.</p>
+                    </div>
+                    <div class="cta-banner-action">
+                        <a href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20certificados%20digitais." target="_blank" rel="noopener noreferrer" class="cta-button" aria-label="Falar com especialista via WhatsApp">
+                            <i data-lucide="message-circle" width="24" height="24"></i>
+                            <span>Falar com um Especialista</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== BLOG PREVIEW SECTION ========== -->
+        <section class="blog-preview" id="blog">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Aprenda mais</span>
+                    <h2 class="section-title">Artigos e Guias</h2>
+                </div>
+
+                <div class="blog-grid">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="blog-placeholder">
+                                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="64" height="64" rx="8" fill="#7C4DFF" opacity="0.1"/>
+                                    <path d="M20 28H44M20 36H36" stroke="#7C4DFF" stroke-width="3" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <span class="blog-category">Guia Completo</span>
+                            <h3 class="blog-title">Como emitir seu primeiro Certificado Digital</h3>
+                            <p class="blog-excerpt">Passo a passo completo para emitir seu e-CPF ou e-CNPJ sem complicações.</p>
+                            <a href="#" class="blog-link">Ler artigo →</a>
+                        </div>
+                    </article>
+
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="blog-placeholder">
+                                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="64" height="64" rx="8" fill="#00C853" opacity="0.1"/>
+                                    <circle cx="32" cy="28" r="8" stroke="#00C853" stroke-width="3"/>
+                                    <path d="M20 44C20 38 25 34 32 34C39 34 44 38 44 44" stroke="#00C853" stroke-width="3" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <span class="blog-category">Segurança</span>
+                            <h3 class="blog-title">5 vantagens do Certificado Digital para empresas</h3>
+                            <p class="blog-excerpt">Descubra como o certificado pode otimizar processos e aumentar a segurança.</p>
+                            <a href="#" class="blog-link">Ler artigo →</a>
+                        </div>
+                    </article>
+
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="blog-placeholder">
+                                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="64" height="64" rx="8" fill="#FF9800" opacity="0.1"/>
+                                    <rect x="24" y="20" width="16" height="24" rx="2" stroke="#FF9800" stroke-width="3"/>
+                                    <circle cx="32" cy="36" r="3" fill="#FF9800"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <span class="blog-category">Dúvidas Frequentes</span>
+                            <h3 class="blog-title">Diferença entre e-CPF A1 e A3</h3>
+                            <p class="blog-excerpt">Entenda as diferenças e escolha o certificado ideal para suas necessidades.</p>
+                            <a href="#" class="blog-link">Ler artigo →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== SOBRE SECTION ========== -->
+        <section class="about" id="sobre">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text">
+                        <span class="section-label">Quem somos</span>
+                        <h2 class="section-title">Certificação Digital de Confiança</h2>
+                        <p class="about-description">
+                            Somos uma Autoridade de Registro oficial e devidamente credenciada, oferecendo soluções em certificação digital há mais de 10 anos. Nossa missão é simplificar o acesso à tecnologia de assinatura digital, garantindo segurança, agilidade e conformidade legal para pessoas físicas e jurídicas.
+                        </p>
+                        <p class="about-description">
+                            Com mais de 103 mil certificados emitidos, atendemos desde microempreendedores a grandes corporações, sempre com o mesmo compromisso: excelência no atendimento e suporte técnico especializado.
+                        </p>
+                        <div class="about-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">103k+</span>
+                                <span class="stat-label">Certificados emitidos</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">10+</span>
+                                <span class="stat-label">Anos de experiência</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">98%</span>
+                                <span class="stat-label">Satisfação dos clientes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="about-image">
+                        <div class="about-visual">
+                            <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="200" cy="200" r="150" fill="url(#gradient1)" opacity="0.2"/>
+                                <circle cx="200" cy="200" r="100" fill="url(#gradient2)" opacity="0.3"/>
+                                <path d="M200 120L260 160V240L200 280L140 240V160L200 120Z" fill="white" opacity="0.9"/>
+                                <circle cx="200" cy="200" r="30" fill="#7C4DFF"/>
+                                <defs>
+                                    <linearGradient id="gradient1" x1="50" y1="50" x2="350" y2="350" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#7C4DFF"/>
+                                        <stop offset="1" stop-color="#2B006B"/>
+                                    </linearGradient>
+                                    <linearGradient id="gradient2" x1="100" y1="100" x2="300" y2="300" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#00C853"/>
+                                        <stop offset="1" stop-color="#7C4DFF"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <div id="footer-container"></div>
+
+    <!-- Main JavaScript - Defer loading to not block rendering (minified for production) -->
+    <script src="assets/js/script.min.js" defer></script>
+</body>
+</html>
