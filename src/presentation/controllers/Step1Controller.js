@@ -147,7 +147,7 @@ export class Step1Controller {
                     codigo: 'ecpf-a1',
                     nome: 'e-CPF A1 (1 ano)',
                     tipo: 'e-CPF',
-                    preco: 109.00
+                    preco: 5.00
                 });
 
                 console.log('✅ Step1Controller: Horário selecionado:', timeString);

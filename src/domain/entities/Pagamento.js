@@ -182,7 +182,7 @@ export class Pagamento {
     static fromSafe2PayResponse(safe2payResponse) {
         return new Pagamento(
             safe2payResponse.transactionId || safe2payResponse.IdTransaction,
-            safe2payResponse.valor || safe2payResponse.Amount || 109.00,
+            safe2payResponse.valor || safe2payResponse.Amount || 5.00,
             safe2payResponse.pixCopiaECola || safe2payResponse.qrCode || safe2payResponse.QrCode,
             safe2payResponse.qrCodeImage || safe2payResponse.QrCodeImage,
             safe2payResponse.status || 'pending'
@@ -196,7 +196,7 @@ export class Pagamento {
     static createDemo() {
         return new Pagamento(
             'DEMO_' + Date.now(),
-            109.00,
+            5.00,
             '00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-426614174000520400005303986540518.005802BR5925CERTIFICADO DIGITAL DEMO6009SAO PAULO62070503***6304ABCD',
             null,
             'pending'

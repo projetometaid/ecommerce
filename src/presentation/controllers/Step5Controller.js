@@ -59,14 +59,14 @@ export class Step5Controller {
             // 📊 Disparar evento GTM: Pagamento PIX gerado
             gtmService.trackAddPaymentInfo(
                 {
-                    valor: resultado.pagamento.valor || 109.00,
+                    valor: resultado.pagamento.valor || 5.00,
                     transactionId: resultado.pagamento.transactionId
                 },
                 {
                     codigo: 'ecpf-a1',
                     nome: 'e-CPF A1 (1 ano)',
                     tipo: 'e-CPF',
-                    preco: resultado.pagamento.valor || 109.00
+                    preco: resultado.pagamento.valor || 5.00
                 }
             );
 
@@ -134,7 +134,7 @@ export class Step5Controller {
             }
 
             // 📊 Disparar evento GTM: Código PIX copiado
-            gtmService.trackPixCopied(this.pagamentoAtual?.valor || 109.00);
+            gtmService.trackPixCopied(this.pagamentoAtual?.valor || 5.00);
 
             console.log('✅ Código PIX copiado');
 
@@ -277,9 +277,9 @@ export class Step5Controller {
                 codigo: 'ecpf-a1',
                 nome: 'e-CPF A1 (1 ano)',
                 tipo: 'e-CPF',
-                preco: this.pagamentoAtual?.valor || 109.00
+                preco: this.pagamentoAtual?.valor || 5.00
             },
-            valor: this.pagamentoAtual?.valor || 109.00,
+            valor: this.pagamentoAtual?.valor || 5.00,
             email: clienteEmail,
             telefone: clienteTelefone
         });

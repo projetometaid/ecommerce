@@ -5,6 +5,26 @@ Sistema de checkout para **Certificados Digitais e-CPF A1** refatorado com Clean
 
 ---
 
+## 🌐 Infraestrutura AWS
+
+### Ambientes de Produção
+- **Domínio**: [www.certificadodigital.br.com](https://www.certificadodigital.br.com)
+- **CloudFront**: d2nmq07g3fjio1.cloudfront.net (ID: E1S5ICGQCKGAIM)
+- **S3 Bucket**: ecommerce-certificado-frontend-prod
+- **Região**: us-east-1
+- **Conta AWS**: 099670158004 (user: portal_assinatura)
+
+### Certificado SSL
+- **Status**: ISSUED ✅
+- **Domínio**: www.certificadodigital.br.com
+- **ARN**: arn:aws:acm:us-east-1:099670158004:certificate/0b7078c3-66fd-4531-a6d0-f9298273d421
+- **Validação**: DNS (CNAME)
+
+### Deploy
+O código deste repositório está hospedado no S3 e servido via CloudFront com HTTPS.
+
+---
+
 ## 🎯 Status da Migração
 
 ### ✅ Fase 0 - Setup Inicial (CONCLUÍDA)
@@ -102,4 +122,22 @@ http://localhost:8080
 
 ---
 
-*Última atualização: 02/10/2025*
+## 🔄 Como Fazer Deploy
+
+```bash
+# Sincronizar código local com S3
+aws s3 sync . s3://ecommerce-certificado-frontend-prod/ \
+  --exclude ".git/*" \
+  --exclude "terraform/*" \
+  --exclude "node_modules/*" \
+  --exclude ".DS_Store"
+
+# Invalidar cache do CloudFront
+aws cloudfront create-invalidation \
+  --distribution-id E1S5ICGQCKGAIM \
+  --paths "/*"
+```
+
+---
+
+*Última atualização: 07/10/2025*

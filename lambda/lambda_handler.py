@@ -112,7 +112,7 @@ class Safe2PayAPI:
 
         try:
             payment_data = {
-                "Amount": 180.00,
+                "Amount": 5.00,
                 "Description": "Certificado Digital e-CPF",
                 "Reference": f"ECPF-{datetime.now().strftime('%Y%m%d%H%M%S')}",
                 "CallbackUrl": "https://seu-dominio.com/webhook/safe2pay"
@@ -148,7 +148,7 @@ class Safe2PayAPI:
                         'qrCode': response_detail.get('Key'),
                         'qrCodeImage': response_detail.get('QrCode'),
                         'pixCopiaECola': response_detail.get('Key'),
-                        'valor': 180.00,
+                        'valor': 5.00,
                         'status': 'pending',
                         'reference': payment_data['Reference'],
                         'dadosCliente': {
