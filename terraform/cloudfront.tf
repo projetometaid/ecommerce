@@ -84,9 +84,9 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
   }
 
-  # Certificado SSL
+  # Certificado SSL customizado
   viewer_certificate {
-    acm_certificate_arn      = "arn:aws:acm:us-east-1:099670158004:certificate/0b7078c3-66fd-4531-a6d0-f9298273d421"
+    acm_certificate_arn      = var.certificate_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }

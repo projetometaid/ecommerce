@@ -63,6 +63,13 @@ resource "aws_apigatewayv2_route" "safeweb_protocolo" {
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
+# Rota: POST /api/hope/create-solicitation
+resource "aws_apigatewayv2_route" "hope_create_solicitation" {
+  api_id    = aws_apigatewayv2_api.api.id
+  route_key = "POST /api/hope/create-solicitation"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
 # Rota: GET /api/health
 resource "aws_apigatewayv2_route" "health" {
   api_id    = aws_apigatewayv2_api.api.id
@@ -97,6 +104,14 @@ resource "aws_apigatewayv2_stage" "prod" {
   }
 
   tags = local.common_tags
+}
+
+# Rota: Webhook Safe2Pay
+resource "aws_apigatewayv2_route" "webhook_safe2pay" {
+  api_id             = aws_apigatewayv2_api.api.id
+  route_key          = "POST /webhook/safe2pay"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+  authorization_type = "NONE"
 }
 
 # CloudWatch Log Group para API Gateway

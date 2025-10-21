@@ -62,3 +62,4 @@ terraform.tfvars
 *.md
 !README.md
 !SETUP.md
+terraform/terraform.tfvars

@@ -22,6 +22,18 @@ variable "domain_name" {
   default     = ""
 }
 
+variable "certificate_arn" {
+  description = "ARN do certificado ACM (se usar domínio customizado)"
+  type        = string
+  default     = ""
+}
+
+variable "route53_hosted_zone_id" {
+  description = "ID da Hosted Zone no Route 53 (se usar domínio customizado)"
+  type        = string
+  default     = ""
+}
+
 # Credenciais Safe2Pay (serão movidas para Secrets Manager)
 variable "safe2pay_token" {
   description = "Token Safe2Pay"

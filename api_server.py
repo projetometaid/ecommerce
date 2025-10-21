@@ -756,6 +756,10 @@ class APIRequestHandler(http.server.BaseHTTPRequestHandler):
             self.handle_safeweb_consultar_cpf()
         elif self.path == '/api/safeweb/gerar-protocolo':
             self.handle_safeweb_gerar_protocolo()
+        elif self.path == '/api/hope/create-solicitation':
+            self.handle_hope_create_solicitation()
+        elif self.path == '/webhook/safe2pay':
+            self.handle_safe2pay_webhook()
         else:
             self.send_json_response(404, {
                 'sucesso': False,
@@ -1000,6 +1004,163 @@ class APIRequestHandler(http.server.BaseHTTPRequestHandler):
                 'erro': 'Erro interno no servidor'
             })
 
+    def handle_hope_create_solicitation(self):
+        """Handler para criar solicitação Hope após pagamento aprovado"""
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length == 0:
+                self.send_json_response(400, {
+                    'sucesso': False,
+                    'erro': 'Corpo da requisição vazio'
+                })
+                return
+
+            post_data = self.rfile.read(content_length)
+            dados = json.loads(post_data.decode('utf-8'))
+
+            protocol = dados.get('protocol')
+            if not protocol:
+                self.send_json_response(400, {
+                    'sucesso': False,
+                    'erro': 'Protocolo é obrigatório'
+                })
+                return
+
+            logger.info(f"📋 Criando solicitação Hope para protocolo: {protocol}")
+
+            # Obter token Safeweb
+            token = self.safeweb.ensure_valid_token()
+            if not token:
+                self.send_json_response(500, {
+                    'sucesso': False,
+                    'erro': 'Erro ao autenticar com Safeweb'
+                })
+                return
+
+            # Chamar API Hope
+            hope_url = os.getenv('SAFEWEB_HOPE_API_URL')
+            attendance_place_id = int(os.getenv('SAFEWEB_ATTENDANCE_PLACE_ID', '348'))
+
+            headers = {
+                'Authorization': f'bearer {token}',
+                'Content-Type': 'application/json'
+            }
+
+            payload = {
+                'protocol': protocol,
+                'attendancePlaceId': attendance_place_id,
+                'aciRemovalCandidate': False
+            }
+
+            logger.info(f"🔄 Chamando Hope API: {hope_url}")
+            response = requests.post(hope_url, headers=headers, json=payload, timeout=30)
+
+            if response.status_code == 200:
+                result = response.json()
+                logger.info(f"✅ Solicitação Hope criada com sucesso")
+                logger.info(f"📎 URL de upload: {result.get('url')}")
+
+                self.send_json_response(200, {
+                    'sucesso': True,
+                    'uploadUrl': result.get('url'),
+                    'emailEnviado': result.get('emailSend', False)
+                })
+            else:
+                logger.error(f"❌ Erro na API Hope: Status {response.status_code}")
+                logger.error(f"   Resposta: {response.text}")
+                self.send_json_response(500, {
+                    'sucesso': False,
+                    'erro': f'Erro na API Hope: {response.text}'
+                })
+
+        except Exception as e:
+            logger.error(f"❌ Erro em handle_hope_create_solicitation: {str(e)}", exc_info=True)
+            self.send_json_response(500, {
+                'sucesso': False,
+                'erro': 'Erro interno no servidor'
+            })
+
+    def handle_safe2pay_webhook(self):
+        """
+        Recebe notificações do Safe2Pay sobre mudanças de status de transação
+        Documentação: https://developers.safe2pay.com.br/reference/webhook-ordem-de-pagamento-copy
+        """
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length)
+            data = json.loads(body.decode('utf-8'))
+
+            logger.info("="*60)
+            logger.info("🔔 WEBHOOK Safe2Pay recebido")
+            logger.info(f"📦 Payload: {json.dumps(data, indent=2)}")
+            logger.info("="*60)
+
+            # Extrair informações do payload
+            # Estrutura do webhook Safe2Pay:
+            # {
+            #   "IdTransaction": 12345678,
+            #   "TransactionStatus": {
+            #     "Id": 3,
+            #     "Code": "3",
+            #     "Name": "Autorizado"
+            #   },
+            #   ...
+            # }
+
+            transaction_id = data.get('IdTransaction')
+            transaction_status = data.get('TransactionStatus', {})
+            status_id = transaction_status.get('Id')
+            status_name = transaction_status.get('Name')
+
+            logger.info(f"💳 Transaction ID: {transaction_id}")
+            logger.info(f"📊 Status: {status_name} (ID: {status_id})")
+
+            # Status 3 = Aprovado/Autorizado
+            if status_id == 3 or status_id == '3':
+                logger.info("✅ Pagamento APROVADO via webhook!")
+
+                # Aqui você pode:
+                # 1. Salvar em banco de dados
+                # 2. Enviar email
+                # 3. Disparar eventos para frontend via WebSocket/SSE
+                # 4. Criar solicitação Hope automaticamente
+
+                # TODO: Implementar ações pós-aprovação
+                # - Buscar dados do pedido pelo transaction_id
+                # - Chamar API Hope
+                # - Notificar frontend
+
+            elif status_id == 9 or status_id == '9':
+                logger.warning("⏰ Pagamento EXPIRADO via webhook")
+
+            elif status_id == 4 or status_id == '4':
+                logger.warning("❌ Pagamento CANCELADO via webhook")
+
+            else:
+                logger.info(f"ℹ️ Status intermediário: {status_name}")
+
+            # Sempre retornar 200 OK para o Safe2Pay saber que recebemos
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'success': True,
+                'message': 'Webhook recebido com sucesso'
+            }).encode('utf-8'))
+
+        except Exception as e:
+            logger.error(f"❌ Erro ao processar webhook: {str(e)}", exc_info=True)
+
+            # Mesmo em caso de erro, retornar 200 para não ficar recebendo retentativas
+            # (mas logar o erro para investigação)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'success': False,
+                'error': str(e)
+            }).encode('utf-8'))
+
     def get_allowed_origin(self):
         """Retorna origem permitida baseado no header Origin (SEGURANÇA)"""
         origin = self.headers.get('Origin', '')
@@ -1066,10 +1227,12 @@ def main():
             logger.info(f"🌐 Endereço: http://localhost:{API_PORT}")
             logger.info("=" * 60)
             logger.info("📋 Endpoints disponíveis:")
-            logger.info(f"   POST /api/pix/create       - Criar pagamento PIX")
-            logger.info(f"   GET  /api/pix/status/<id>  - Verificar status")
-            logger.info(f"   GET  /api/health           - Health check")
-            logger.info(f"   GET  /api/proxy-image      - Proxy de imagens")
+            logger.info(f"   POST /api/pix/create               - Criar pagamento PIX")
+            logger.info(f"   GET  /api/pix/status/<id>          - Verificar status")
+            logger.info(f"   POST /api/hope/create-solicitation - Criar solicitação Hope")
+            logger.info(f"   POST /webhook/safe2pay             - Webhook Safe2Pay")
+            logger.info(f"   GET  /api/health                   - Health check")
+            logger.info(f"   GET  /api/proxy-image              - Proxy de imagens")
             logger.info("=" * 60)
             logger.info(f"🌐 Frontend: http://localhost:{STATIC_PORT}")
             logger.info(f"⏹️  Pressione Ctrl+C para parar")

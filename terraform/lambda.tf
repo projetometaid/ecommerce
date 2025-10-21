@@ -91,9 +91,11 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      SAFE2PAY_SECRET_ARN = aws_secretsmanager_secret.safe2pay.arn
-      SAFEWEB_SECRET_ARN  = aws_secretsmanager_secret.safeweb.arn
-      ENVIRONMENT         = var.environment
+      SAFE2PAY_SECRET_ARN         = aws_secretsmanager_secret.safe2pay.arn
+      SAFEWEB_SECRET_ARN          = aws_secretsmanager_secret.safeweb.arn
+      SAFEWEB_HOPE_API_URL        = "https://pss.safewebpss.com.br/Service/Microservice/Hope/Shared/api/integration/solicitation"
+      SAFEWEB_ATTENDANCE_PLACE_ID = "348"
+      ENVIRONMENT                 = var.environment
     }
   }
 

@@ -1,0 +1,890 @@
+/* ===================================
+   RESET & BASE STYLES
+   =================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    height: 100%;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #333;
+    background-color: #fff;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===================================
+   CONTAINER
+   =================================== */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===================================
+   HEADER
+   =================================== */
+.header {
+    padding: 6px 0;
+    background: #dfe1e5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    display: block;
+    height: 32px;
+    width: auto;
+}
+
+.whatsapp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #25D366;
+    border-radius: 20px;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.whatsapp-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    background: #20bd5a;
+}
+
+.whatsapp-btn svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.whatsapp-text {
+    white-space: nowrap;
+}
+
+/* ===================================
+   MAIN CONTENT
+   =================================== */
+.main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+/* ===================================
+   LEFT COLUMN - INFORMATION
+   =================================== */
+.left-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.content-wrapper {
+    max-width: 580px;
+}
+
+.main-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 40px;
+    font-weight: 300;
+    line-height: 1.6;
+}
+
+/* ===================================
+   GOOGLE REVIEWS CARD
+   =================================== */
+.reviews-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reviews-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* Cabeçalho em GRID: coluna esquerda | coluna direita */
+.reviews-head {
+    --gap: clamp(16px, 3vw, 32px);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    column-gap: var(--gap);
+    row-gap: clamp(8px, 1.5vw, 16px);
+    margin-bottom: 24px;
+}
+
+/* Pilha da esquerda: logo+texto + estrelas + subtítulo */
+.brand-stack {
+    display: grid;
+    row-gap: clamp(8px, 1.2vw, 12px);
+}
+
+/* Linha do logo + "Reviews" */
+.brandline {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.google-logo {
+    height: clamp(22px, 2.2vw, 28px);
+    width: auto;
+    flex-shrink: 0;
+}
+
+.brand-text {
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.1;
+    font-size: clamp(20px, 2.4vw, 28px);
+    color: #333;
+}
+
+/* Linha de estrelas */
+.stars-row {
+    display: flex;
+    gap: clamp(4px, 1vw, 8px);
+}
+
+.star {
+    font-size: clamp(20px, 2.3vw, 28px);
+    color: #F5B301;
+    line-height: 1;
+}
+
+/* Texto de subtítulo */
+.reviews-sub {
+    margin: 0;
+    color: #666;
+    font-size: clamp(14px, 1.8vw, 18px);
+    line-height: 1.4;
+}
+
+/* Stack da direita: número + subtítulo */
+.score-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(4px, 1vw, 8px);
+}
+
+/* Número isolado */
+.score {
+    --nudgeY: -2px;
+    margin: 0;
+    align-self: flex-start;
+    font-weight: 800;
+    font-size: clamp(32px, 6vw, 72px);
+    line-height: 1;
+    transform: translateY(var(--nudgeY));
+    white-space: nowrap;
+    color: #1a1a1a;
+}
+
+/* Subtítulo abaixo do score */
+.score-sub {
+    margin: 0;
+    color: #666;
+    font-size: clamp(14px, 1.8vw, 16px);
+    line-height: 1.3;
+}
+
+/* ===================================
+   CTA BUTTON
+   =================================== */
+.cta-button {
+    display: inline-block;
+    background: #f89a1c;
+    color: #fff;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(248, 154, 28, 0.3);
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
+}
+
+.cta-button:hover {
+    background: #e08915;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(248, 154, 28, 0.4);
+}
+
+.cta-button:active {
+    transform: translateY(0);
+}
+
+/* Online Indicator (Bolinha Verde Piscante) */
+.cta-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.online-indicator {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    background-color: #00ff00;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+}
+
+.online-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background-color: #00ff00;
+    border-radius: 50%;
+    animation: ripple 2s ease-in-out infinite;
+    opacity: 0.6;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* ===================================
+   RIGHT COLUMN - CHECKOUT
+   =================================== */
+.right-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-self: flex-start; /* Evita esticar verticalmente */
+    gap: 24px;
+}
+
+/* Texto introdutório acima do checkout */
+.checkout-intro {
+    font-size: 1.125rem;
+    color: #666;
+    text-align: center;
+    max-width: 600px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ===================================
+   WIDGET - MEDIDAS EXATAS E ZERO VAZAMENTO
+   Borda cola exatamente no widget (sem padding extra)
+   =================================== */
+.checkout-container {
+    width: 600px;            /* desktop - mantendo dimensão original */
+    height: 570px !important; /* ALTURA FIXA: 40px (barra azul) + 530px (wrapper) = 570px */
+    max-height: 570px !important;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12), 0 0 2px rgba(0, 0, 0, 0.08);
+    overflow: hidden !important; /* Corta qualquer overflow */
+    margin: 0 auto;
+    position: relative; /* Para que os botões fixos fiquem dentro do container */
+}
+
+/* Cabeçalho visual do cartão */
+.checkout-container::before {
+    content: "SISTEMA DE COMPRA ONLINE";
+    display: block;
+    background: #1976D2;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 10px 20px; /* Reduzido de 16px para 10px para ganhar espaço */
+    border-radius: 12px 12px 0 0;
+}
+
+/* ::after REMOVIDO - botões ficam fixos dentro do wrapper */
+
+/* ===== Widget cola nas bordas do cartão ===== */
+#h4-Cert-DigitalElement {
+    width: 600px;            /* desktop - mantendo dimensão original */
+    height: 530px !important; /* DEVE SER IGUAL AO #checkout-wrapper */
+    display: block;
+    overflow: hidden;        /* evita barras do filho "vazar" */
+    position: relative;
+}
+
+/* Se o script injetar <iframe>, ele ocupa 100% do wrapper */
+#h4-Cert-DigitalElement iframe {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    border: 0;
+}
+
+/* ===================================
+   FOOTER
+   =================================== */
+.footer {
+    padding: 15px 0;
+    background: #f9f9f9;
+    border-top: 1px solid #e5e5e5;
+}
+
+.footer-text {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #666;
+    font-weight: 300;
+}
+
+.footer-text a {
+    color: #1976D2;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-text a:hover {
+    color: #1565C0;
+    text-decoration: underline;
+}
+
+/* ===================================
+   RESPONSIVE - TABLET
+   =================================== */
+@media (max-width: 1024px) {
+    .split-layout {
+        gap: 40px;
+    }
+
+    .main-title {
+        font-size: 2.5rem;
+    }
+
+    .subtitle {
+        font-size: 1.125rem;
+    }
+
+    .reviews-count {
+        font-size: 2.5rem;
+    }
+
+    .checkout-container {
+        max-width: 500px;
+    }
+}
+
+/* ===================================
+   RESPONSIVE - MOBILE
+   =================================== */
+@media (max-width: 768px) {
+    .header {
+        padding: 12px 0;
+    }
+
+    .logo img {
+        height: 32px;
+    }
+
+    .whatsapp-btn {
+        padding: 10px 16px;
+        font-size: 0.875rem;
+        gap: 8px;
+    }
+
+    .whatsapp-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .whatsapp-text {
+        font-size: 0.875rem;
+    }
+
+    .main-content {
+        min-height: auto;
+        padding: 30px 0;
+    }
+
+    .split-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    /* Reordena: título + Google + texto + widget */
+    .left-column {
+        order: 1;
+    }
+
+    .right-column {
+        order: 2;
+        gap: 20px;
+    }
+
+    .content-wrapper {
+        max-width: 100%;
+    }
+
+    .checkout-intro {
+        font-size: 1rem;
+        max-width: 100%;
+        padding: 0 16px;
+    }
+
+    .main-title {
+        font-size: 2.25rem;
+        margin-bottom: 16px;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 32px;
+    }
+
+    .reviews-card {
+        padding: 24px 20px;
+        border-radius: 16px;
+    }
+
+    .reviews-head {
+        grid-template-columns: 1fr;
+        margin-bottom: 20px;
+    }
+
+    .score {
+        margin-top: 8px;
+        align-self: auto;
+        transform: none;
+    }
+
+    .cta-button {
+        padding: 14px 28px;
+        font-size: 1rem;
+    }
+
+    /* Widget Container - Mobile (768px) */
+    .checkout-container {
+        width: 310px;          /* mobile - largura exata do widget */
+        border-radius: 8px;
+    }
+
+    .checkout-container::before {
+        padding: 12px 14px;
+        border-radius: 8px 8px 0 0;
+        font-size: 0.95rem;
+    }
+
+    #h4-Cert-DigitalElement {
+        width: 310px;          /* mobile - medida exata */
+        height: calc(480px - 45px);  /* micro-redução para ajuste fino */
+    }
+
+    .footer-text {
+        font-size: 0.75rem;
+        line-height: 1.6;
+    }
+}
+
+/* ===================================
+   RESPONSIVE - SMALL MOBILE
+   =================================== */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 16px;
+    }
+
+    .main-title {
+        font-size: 1.875rem;
+    }
+
+    .subtitle {
+        font-size: 0.9375rem;
+    }
+
+    .reviews-card {
+        padding: 20px 16px;
+        border-radius: 12px;
+    }
+
+    /* WhatsApp - apenas ícone em telas muito pequenas */
+    .whatsapp-btn {
+        padding: 10px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+    }
+
+    .whatsapp-text {
+        display: none;
+    }
+
+}
+
+/* ===================================
+   SEGURANÇA ADICIONAL - TELAS MUITO PEQUENAS
+   =================================== */
+@media (max-width: 360px) {
+    #h4-Cert-DigitalElement {
+        width: min(310px, 95vw);
+    }
+}
+
+/* ===================================
+   PERFORMANCE OPTIMIZATIONS
+   =================================== */
+
+/* Reduce animations on low-end devices */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* GPU acceleration for smoother animations (only during hover/interaction) */
+.cta-button:hover,
+.whatsapp-btn:hover,
+.reviews-card:hover {
+    transform: translateZ(0);
+}
+
+/* Print styles */
+@media print {
+    .header,
+    .footer,
+    .whatsapp-btn {
+        display: none;
+    }
+
+    .main-content {
+        min-height: auto;
+    }
+
+    .split-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-container {
+        display: none;
+    }
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+
+/* Focus styles for keyboard navigation */
+a:focus,
+button:focus {
+    outline: 3px solid #f89a1c;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .reviews-card {
+        border: 2px solid #000;
+    }
+
+    .cta-button {
+        border: 2px solid #000;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    /* Uncomment if you want to add dark mode support
+    body {
+        background: #1a1a1a;
+        color: #fff;
+    }
+
+    .header {
+        background: #2a2a2a;
+        box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+    }
+    */
+}
+
+/* ===================================
+   ESTILOS DO CHECKOUT - ESCOPO ISOLADO
+   Apenas para elementos dentro de #checkout-wrapper
+   =================================== */
+
+/* Wrapper do checkout */
+#checkout-wrapper {
+    width: 100%;
+    padding: 0 !important; /* REMOVIDO: padding de 20px estava criando espaço branco */
+    min-height: 400px;
+}
+
+/* Steps container */
+#checkout-wrapper .steps-container {
+    width: 100%;
+    height: 100% !important; /* Ocupa toda a altura do wrapper */
+    padding: 0 !important; /* Remove qualquer padding */
+    margin: 0 !important; /* Remove qualquer margin */
+}
+
+/* Step content */
+#checkout-wrapper .step-content {
+    display: none;
+}
+
+#checkout-wrapper .step-content.active {
+    display: block;
+}
+
+/* Títulos dentro dos steps */
+#checkout-wrapper h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Formulários */
+#checkout-wrapper .form-dados,
+#checkout-wrapper .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#checkout-wrapper input,
+#checkout-wrapper select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+#checkout-wrapper input:focus,
+#checkout-wrapper select:focus {
+    outline: none;
+    border-color: #1976D2;
+}
+
+/* Botões */
+#checkout-wrapper .step-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+#checkout-wrapper button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+#checkout-wrapper .btn-next {
+    background: #1976D2;
+    color: white;
+    flex: 1;
+}
+
+#checkout-wrapper .btn-next:hover:not(:disabled) {
+    background: #1565C0;
+}
+
+#checkout-wrapper .btn-next:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+#checkout-wrapper .btn-back {
+    background: #f5f5f5;
+    color: #333;
+}
+
+#checkout-wrapper .btn-back:hover {
+    background: #e0e0e0;
+}
+
+#checkout-wrapper .btn-primary {
+    background: #1976D2;
+    color: white;
+}
+
+#checkout-wrapper .btn-copy {
+    background: #f89a1c;
+    color: white;
+}
+
+/* Horários */
+#checkout-wrapper .horarios-container {
+    margin: 20px 0;
+}
+
+#checkout-wrapper .horarios-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+/* Feedback messages */
+#checkout-wrapper .feedback-container {
+    padding: 12px;
+    border-radius: 6px;
+    margin: 16px 0;
+}
+
+#checkout-wrapper .feedback-message {
+    font-size: 0.95rem;
+}
+
+/* Resumo */
+#checkout-wrapper .resumo-container {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Pagamento PIX */
+#checkout-wrapper .pagamento-container {
+    text-align: center;
+}
+
+#checkout-wrapper .qr-code {
+    margin: 20px auto;
+    max-width: 300px;
+}
+
+#checkout-wrapper .qr-code img {
+    width: 100%;
+    height: auto;
+}
+
+#checkout-wrapper .pix-code-container {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+#checkout-wrapper .loading-spinner {
+    margin: 20px auto;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #1976D2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Confirmação */
+#checkout-wrapper .confirmacao-container {
+    text-align: center;
+    padding: 20px;
+}
+
+#checkout-wrapper .success-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+#checkout-wrapper .protocolo-info {
+    margin: 20px 0;
+    padding: 16px;
+    background: #e8f5e9;
+    border-radius: 8px;
+}
+
+#checkout-wrapper .next-steps {
+    margin-top: 24px;
+    text-align: left;
+}
+
+#checkout-wrapper .next-steps ol {
+    margin-left: 20px;
+    line-height: 1.8;
+}
