@@ -1,400 +1,322 @@
 # ✅ Checklist de Deploy AWS - E-commerce Certificado Digital
 
-## 📋 Status da Infraestrutura
+## 📊 Status da Infraestrutura
 
-### ✅ **PRONTO PARA DEPLOY**
+### ✅ **EM PRODUÇÃO** - www.certificadodigital.br.com
 
 ---
 
-## 🔐 **1. Credenciais AWS Configuradas** ✅
+## 🌐 **Informações de Produção**
 
-**Account ID**: `099670158004`
-**IAM User**: `arn:aws:iam::099670158004:user/ecommerce_ccamp`
-**Access Key ID**: `AKIARONGN5K2BTDKZUFZ`
-**Region**: `us-east-1` (Norte da Virgínia)
+### URLs
+- **Domínio**: https://www.certificadodigital.br.com
+- **CloudFront**: https://d2iucdo1dmk5az.cloudfront.net
+- **API Gateway**: https://u4w4tf2o4f.execute-api.us-east-1.amazonaws.com
 
-### Verificação:
+### Recursos AWS
+- **Conta AWS**: 099670158004
+- **Região**: us-east-1 (Norte da Virgínia)
+- **S3 Bucket**: ecommerce-certificado-frontend-prod
+- **CloudFront ID**: E27KZPZJ1WKMH8
+- **Lambda Function**: ecommerce-certificado-api-prod
+- **SSL Certificate**: ACM (arn:aws:acm:us-east-1:099670158004:certificate/0b7078c3-66fd-4531-a6d0-f9298273d421)
+
+---
+
+## ✅ **1. Pré-requisitos de Deploy**
+
+### Ferramentas Instaladas
+- [x] AWS CLI configurado
+- [x] Terraform v1.0+
+- [x] Python 3.12+
+- [x] Git
+
+### Verificação
 ```bash
-aws sts get-caller-identity
+aws sts get-caller-identity    # Validar credenciais
+terraform --version              # Verificar Terraform
+python3 --version                # Verificar Python
 ```
-
-**Status**: ✅ Credenciais validadas e funcionando
 
 ---
 
-## 📦 **2. Arquivos e Estrutura do Projeto** ✅
+## ✅ **2. Arquivos do Projeto**
 
-### **Frontend (Pasta `public/`)**
+### Estrutura Atual
 ```
-public/
-├── index.html                          ✅ Página principal unificada
-├── index-backup.html                   ✅ Backup
-├── assets/
-│   ├── css/
-│   │   ├── styles.css                  ✅ CSS landing page
-│   │   ├── checkout-isolated.css       ✅ CSS checkout otimizado
-│   │   ├── modal.css                   ✅ CSS modal
-│   │   └── steps.css                   ✅ CSS steps original
-│   ├── images/
-│   │   └── logo_certificado_campinas.svg ✅ Logo
-│   ├── favicon/                        ✅ 6 arquivos favicon
-│   └── js/
-│       └── widget-enforcer.js          ✅ JavaScript utils
-└── src/
-    ├── main.js                         ✅ Bootstrap da aplicação
-    ├── domain/                         ✅ Domain layer (entities, use cases)
-    ├── application/                    ✅ Application layer
-    ├── infrastructure/                 ✅ Infrastructure (repositories)
-    ├── presentation/                   ✅ Presentation (controllers, views)
-    └── shared/
-        ├── config/Config.js            ✅ Configurações
-        └── utils/
-            ├── GTMService.js           ✅ Google Tag Manager
-            ├── InputMasks.js           ✅ Máscaras de input
-            └── CryptoUtil.js           ✅ Criptografia
+ecommerce/
+├── public/                      ✅ Frontend (em produção)
+│   ├── index.html              ✅ Landing + Checkout
+│   ├── assets/                 ✅ CSS, imagens, favicons
+│   └── src/                    ✅ Clean Architecture (41 arquivos JS)
+│
+├── lambda/                      ✅ Backend serverless
+│   ├── lambda_handler.py       ✅ Função principal (CORRIGIDA v1.2.0)
+│   ├── build.sh                ✅ Script de build
+│   └── requirements.txt        ✅ Dependências Python
+│
+├── terraform/                   ✅ Infraestrutura como código
+│   ├── main.tf                 ✅ Provider AWS
+│   ├── s3.tf                   ✅ Bucket + CloudFront
+│   ├── lambda.tf               ✅ Lambda + API Gateway
+│   ├── api_gateway.tf          ✅ HTTP API
+│   ├── secrets.tf              ✅ Secrets Manager
+│   └── terraform.tfvars        ✅ Variáveis (NÃO commitado)
+│
+├── .env                         ✅ Credenciais locais (NÃO commitado)
+├── deploy.sh                    ✅ Deploy automatizado
+└── README.md                    ✅ Documentação atualizada
 ```
-
-**Status**: ✅ Todos os arquivos presentes e otimizados
 
 ---
 
-### **Backend (API Python)**
-```
-api_server.py                           ✅ Flask API Server
-├── Endpoints:
-│   ├── POST /api/verificar-biometria   ✅ Safeweb
-│   ├── POST /api/consultar-cpf         ✅ Safeweb RFB
-│   ├── POST /api/gerar-protocolo       ✅ Safeweb
-│   ├── POST /api/gerar-pix             ✅ Safe2Pay
-│   └── POST /api/verificar-pagamento   ✅ Safe2Pay
-└── Features:
-    ├── CORS habilitado                 ✅
-    ├── Rate limiting                   ✅
-    ├── Logging                         ✅
-    └── Error handling                  ✅
-```
+## ✅ **3. Secrets e Credenciais**
 
-**Status**: ✅ API completa e funcional
+### AWS Secrets Manager (Produção)
+- [x] `ecommerce-certificado-safe2pay-prod` - Token e Secret Key
+- [x] `ecommerce-certificado-safeweb-prod` - Credenciais Safeweb
+
+### Arquivo .env (Local/Dev)
+- [x] SAFE2PAY_TOKEN
+- [x] SAFE2PAY_API_SECRET_KEY
+- [x] SAFEWEB_USERNAME
+- [x] SAFEWEB_PASSWORD
+- [x] SAFEWEB_CODIGO_PARCEIRO
+- [x] PIX_CALLBACK_URL (https://u4w4tf2o4f.execute-api.us-east-1.amazonaws.com/webhook/safe2pay)
+
+**IMPORTANTE**: `.env` está no `.gitignore` e NUNCA é commitado.
 
 ---
 
-### **Lambda Function (Serverless API)**
-```
-lambda/
-├── handler.py                          ✅ Lambda handler
-├── requirements.txt                    ✅ Dependencies
-└── build.sh                            ✅ Build script
-```
+## ✅ **4. Google Tag Manager**
 
-**Status**: ✅ Lambda pronta para deploy
-
----
-
-### **Terraform (Infrastructure as Code)**
-```
-terraform/
-├── main.tf                             ✅ Provider e configuração
-├── s3.tf                               ✅ Bucket S3 + CloudFront
-├── lambda.tf                           ✅ Lambda function
-├── api_gateway.tf                      ✅ API Gateway HTTP
-├── cloudfront.tf                       ✅ CDN CloudFront
-├── secrets.tf                          ✅ AWS Secrets Manager
-├── variables.tf                        ✅ Variáveis
-├── outputs.tf                          ✅ Outputs
-└── terraform.tfvars.example            ✅ Exemplo de variáveis
-```
-
-**Status**: ✅ Infraestrutura completa
+- [x] Container ID: `GTM-WJR5MN66`
+- [x] Tag instalada no `<head>`
+- [x] Noscript tag instalada no `<body>`
+- [x] Eventos configurados:
+  - [x] begin_checkout
+  - [x] select_schedule
+  - [x] cpf_validated
+  - [x] protocol_generated
+  - [x] add_payment_info
+  - [x] pix_copied
+  - [x] **purchase** (conversão)
 
 ---
 
-## 🔑 **3. Variáveis de Ambiente** ✅
+## ✅ **5. Correções Críticas Aplicadas (v1.2.0)**
 
-### **Arquivo `.env`** (Local/Development)
-```bash
-# Safe2Pay (Pagamento PIX)
-SAFE2PAY_TOKEN=26633FEB19AC4C1790C02EE8EC51A3FC
-SAFE2PAY_API_SECRET_KEY=BB4C76CA471846A383D3942F6F857329A0A15D005F43464F838D452A1B401EE0
+### Fix: QR Code PIX não aparecia
+**Problema**: Lambda buscava dados em `PaymentObject` que não existe
+**Solução**: Corrigido para buscar em `ResponseDetail`
 
-# Safeweb (Validação RFB + Protocolo)
-SAFEWEB_USERNAME=integracao-ecommerce-safeweb-q9L48Bop
-SAFEWEB_PASSWORD=0a9afaaa8a3062042a9a5b550ea4ce6466279deeea226266e2d18ba781da0e0d
-SAFEWEB_CODIGO_PARCEIRO=f868b6c5-d238-4112-8800-a2e8397b653e
-SAFEWEB_BASE_URL=https://integracao.safeweb.com.br
-SAFEWEB_AUTH_URL=https://apihom.safeweb.com.br
+**Arquivos corrigidos:**
+- [x] `lambda/lambda_handler.py:421-428` - Mapeamento correto dos dados do Safe2Pay
+- [x] `public/src/infrastructure/repositories/Safe2PayRepository.js:72` - Fallback para pixCopiaECola
+- [x] `public/src/shared/config/Config.js:27-37` - URLs corretas da API Gateway
+- [x] `.env:33` - PIX_CALLBACK_URL apontando para API Gateway
+- [x] `deploy.sh:94` - Upload do diretório `public/` correto
 
-# Produtos Safeweb
-SAFEWEB_PRODUTO_ECPF_A1=37341
-SAFEWEB_PRODUTO_ECNPJ_A1=37343
-```
-
-**Status**: ✅ Variáveis configuradas localmente
-
-### **AWS Secrets Manager** (Production)
-As secrets serão criadas automaticamente pelo Terraform:
-- `ecommerce-certificado-safe2pay-prod`
-- `ecommerce-certificado-safeweb-prod`
-
----
-
-## 🎯 **4. Google Tag Manager (GTM)** ✅
-
-### **Container ID**: `GTM-WJR5MN66`
-
-**Localização no HTML**:
-- ✅ Tag no `<head>` (linhas 4-10)
-- ✅ Tag no `<body>` noscript (linhas 62-65)
-
-**Eventos Rastreados**:
-1. ✅ `begin_checkout` - Início do checkout
-2. ✅ `select_schedule` - Horário selecionado
-3. ✅ `cpf_validated` - CPF validado RFB
-4. ✅ `add_shipping_info` - Dados do cliente
-5. ✅ `protocol_generated` - Protocolo Safeweb
-6. ✅ `select_payer` - Pagador definido
-7. ✅ `add_payment_info` - PIX gerado
-8. ✅ `pix_copied` - Código PIX copiado
-9. ✅ **`purchase`** - Compra finalizada (conversão)
-10. ✅ `conversion` - Google Ads conversion
-
-**Status**: ✅ GTM 100% implementado e funcional
-
----
-
-## 🏗️ **5. Arquitetura AWS**
-
-### **Recursos que Serão Criados**:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         USUÁRIOS                             │
-│                           ↓                                  │
-│                    ┌──────────────┐                         │
-│                    │  Route 53    │ (Opcional - DNS)        │
-│                    │  certificado │                         │
-│                    │   .online    │                         │
-│                    └──────┬───────┘                         │
-│                           ↓                                  │
-│                  ┌────────────────┐                         │
-│                  │  CloudFront    │ CDN Global              │
-│                  │  Distribution  │ HTTPS + Caching         │
-│                  └────┬───────┬───┘                         │
-│                       │       │                              │
-│        ┌──────────────┘       └──────────────┐              │
-│        ↓                                      ↓              │
-│  ┌─────────────┐                      ┌─────────────┐       │
-│  │   S3 Bucket │                      │ API Gateway │       │
-│  │   Frontend  │                      │   HTTP API  │       │
-│  │  (Static)   │                      └──────┬──────┘       │
-│  │             │                             ↓              │
-│  │ - index.html│                      ┌─────────────┐       │
-│  │ - assets/   │                      │   Lambda    │       │
-│  │ - src/      │                      │  Function   │       │
-│  └─────────────┘                      │  (Python)   │       │
-│                                       └──────┬──────┘       │
-│                                              ↓              │
-│                                   ┌──────────────────┐      │
-│                                   │ Secrets Manager  │      │
-│                                   │ - Safe2Pay       │      │
-│                                   │ - Safeweb        │      │
-│                                   └──────────────────┘      │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### **Serviços AWS Utilizados**:
-- ✅ **S3** - Hospedagem frontend estático
-- ✅ **CloudFront** - CDN global com HTTPS
-- ✅ **Lambda** - API serverless (Python 3.11)
-- ✅ **API Gateway** - Gateway HTTP para Lambda
-- ✅ **Secrets Manager** - Gerenciamento seguro de secrets
-- ✅ **IAM** - Permissões e roles
-- ✅ **CloudWatch** - Logs e monitoring
-
-**Custo Estimado Mensal**: ~$5-20 USD (Free Tier elegível)
+**Status**: ✅ Testado e funcionando em produção
 
 ---
 
 ## 🚀 **6. Processo de Deploy**
 
-### **Pré-requisitos**:
-```bash
-# Verificar instalação
-which aws        # AWS CLI instalado
-which terraform  # Terraform instalado
-which python3    # Python 3.11+ instalado
-
-# Se não tiver, instalar:
-brew install awscli
-brew install terraform
-brew install python@3.11
-```
-
-### **Passo 1: Criar `terraform.tfvars`**
-```bash
-cd /Applications/ecommerce/deploy_ecommerce/ecommerce/terraform
-
-cat > terraform.tfvars << 'EOF'
-project_name = "ecommerce-certificado"
-environment  = "prod"
-aws_region   = "us-east-1"
-
-# Secrets
-safe2pay_token        = "26633FEB19AC4C1790C02EE8EC51A3FC"
-safe2pay_secret_key   = "BB4C76CA471846A383D3942F6F857329A0A15D005F43464F838D452A1B401EE0"
-safeweb_username      = "integracao-ecommerce-safeweb-q9L48Bop"
-safeweb_password      = "0a9afaaa8a3062042a9a5b550ea4ce6466279deeea226266e2d18ba781da0e0d"
-safeweb_codigo_parceiro = "f868b6c5-d238-4112-8800-a2e8397b653e"
-EOF
-```
-
-### **Passo 2: Executar Deploy Automático**
+### Método 1: Script Automatizado (Recomendado)
 ```bash
 cd /Applications/ecommerce/deploy_ecommerce/ecommerce
-
-# Executar script de deploy
 ./deploy.sh
 ```
 
-### **Ou Deploy Manual (Passo a Passo)**:
-```bash
-cd /Applications/ecommerce/deploy_ecommerce/ecommerce
+**O script executa:**
+1. ✅ Verifica AWS CLI e Terraform
+2. ✅ Build da Lambda (`lambda/build.sh`)
+3. ✅ Terraform init
+4. ✅ Terraform plan
+5. ✅ Confirmação do usuário
+6. ✅ Terraform apply
+7. ✅ Upload do `public/` para S3
+8. ✅ Invalidação do cache CloudFront
 
+### Método 2: Deploy Manual
+```bash
 # 1. Build Lambda
 cd lambda
 ./build.sh
 cd ..
 
-# 2. Terraform Init
+# 2. Terraform
 cd terraform
 terraform init
-
-# 3. Terraform Plan
 terraform plan -out=tfplan
-
-# 4. Terraform Apply
 terraform apply tfplan
 
-# 5. Upload Frontend
+# 3. Upload Frontend
 BUCKET_NAME=$(terraform output -raw s3_bucket_name)
-aws s3 sync ../public/ s3://$BUCKET_NAME/ --delete
+aws s3 sync public/ s3://$BUCKET_NAME/ --delete
 
-# 6. Invalidar CloudFront
+# 4. Invalidar CloudFront
 DISTRIBUTION_ID=$(terraform output -raw cloudfront_distribution_id)
 aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
-
-# 7. Ver URLs
-terraform output
 ```
 
 ---
 
-## 📊 **7. Verificações Pós-Deploy**
+## ✅ **7. Checklist de Verificação Pós-Deploy**
 
-### **Checklist de Validação**:
-- [ ] Frontend acessível via CloudFront URL
-- [ ] API Gateway retornando responses corretos
-- [ ] Lambda executando sem erros (CloudWatch Logs)
-- [ ] Secrets Manager com valores corretos
-- [ ] CORS configurado corretamente
-- [ ] GTM disparando eventos (Preview Mode)
-- [ ] Checkout funcionando end-to-end
-- [ ] PIX sendo gerado corretamente
-- [ ] Protocolo Safeweb sendo criado
+### Frontend
+- [ ] Site acessível via CloudFront URL
+- [ ] Site acessível via domínio customizado
+- [ ] Landing page carrega corretamente
+- [ ] Checkout carrega sem erros (abrir Console F12)
+- [ ] CSS e imagens carregam
+- [ ] GTM disparando eventos (GTM Preview Mode)
 
-### **Comandos de Verificação**:
+### Backend (API Gateway + Lambda)
+- [ ] Health check responde: `curl https://u4w4tf2o4f.execute-api.us-east-1.amazonaws.com/api/health`
+- [ ] Endpoint de biometria funciona
+- [ ] Endpoint de PIX funciona
+- [ ] Logs da Lambda sem erros (CloudWatch)
+
+### Checkout End-to-End
+- [ ] Step 1: Seleção de horário
+- [ ] Step 2: Validação CPF + biometria
+- [ ] Step 2: Consulta RFB funciona
+- [ ] Step 2: Busca CEP funciona
+- [ ] Step 2: Protocolo gerado com sucesso
+- [ ] Step 3: Dados do pagador aceitos
+- [ ] Step 4: Resumo correto
+- [ ] Step 5: QR Code PIX exibido ✅
+- [ ] Step 5: Código copia-e-cola disponível ✅
+- [ ] Step 5: Monitoramento de pagamento funciona
+
+---
+
+## ✅ **8. Segurança**
+
+### Checklist de Segurança
+- [x] HTTPS obrigatório (CloudFront + ACM)
+- [x] S3 bucket privado (acesso via CloudFront OAI)
+- [x] Secrets no AWS Secrets Manager
+- [x] `.env` no `.gitignore`
+- [x] CORS configurado (whitelist)
+- [x] Rate limiting ativo (200 req/min)
+- [x] Validação de inputs (CPF, CNPJ, email)
+- [x] Logs mascarados (LGPD/GDPR)
+- [x] Lambda timeout configurado (30s)
+- [x] CloudWatch logging ativo
+
+---
+
+## 📊 **9. Monitoramento**
+
+### CloudWatch Logs
 ```bash
-# Ver recursos criados
-cd terraform
-terraform show
-
-# Ver outputs
-terraform output
-
-# Testar API
-API_URL=$(terraform output -raw api_gateway_url)
-curl -X POST $API_URL/verificar-biometria \
-  -H "Content-Type: application/json" \
-  -d '{"cpf": "38601836801", "dataNascimento": "1989-01-28"}'
-
-# Ver logs Lambda
+# Logs da Lambda
 aws logs tail /aws/lambda/ecommerce-certificado-api-prod --follow
 
-# Verificar CloudFront
-CLOUDFRONT_URL=$(terraform output -raw cloudfront_url)
-open $CLOUDFRONT_URL
+# Métricas
+aws cloudwatch get-metric-statistics \
+  --namespace AWS/Lambda \
+  --metric-name Invocations \
+  --dimensions Name=FunctionName,Value=ecommerce-certificado-api-prod \
+  --start-time 2025-10-23T00:00:00Z \
+  --end-time 2025-10-23T23:59:59Z \
+  --period 3600 \
+  --statistics Sum
+```
+
+### GTM Debug
+- **Preview Mode**: https://tagmanager.google.com/
+- Verificar eventos disparados durante checkout completo
+
+---
+
+## 🔄 **10. Rollback (Se Necessário)**
+
+### Rollback do Frontend
+```bash
+# Restaurar versão anterior no S3
+aws s3 sync s3://ecommerce-certificado-frontend-prod-backup/ s3://ecommerce-certificado-frontend-prod/
+
+# Invalidar cache
+aws cloudfront create-invalidation --distribution-id E27KZPZJ1WKMH8 --paths "/*"
+```
+
+### Rollback do Lambda
+```bash
+# Listar versões
+aws lambda list-versions-by-function --function-name ecommerce-certificado-api-prod
+
+# Reverter para versão anterior
+aws lambda update-alias \
+  --function-name ecommerce-certificado-api-prod \
+  --name prod \
+  --function-version <VERSAO_ANTERIOR>
 ```
 
 ---
 
-## 🔒 **8. Segurança**
+## 📝 **11. Documentação de Referência**
 
-### **Implementações de Segurança**:
-- ✅ Secrets no AWS Secrets Manager (não no código)
-- ✅ HTTPS obrigatório via CloudFront
-- ✅ CORS configurado para domínios específicos
-- ✅ Rate limiting na API
-- ✅ IAM roles com least privilege
-- ✅ Logs centralizados no CloudWatch
-- ✅ Dados sensíveis mascarados no GTM
-
-### **Checklist de Segurança**:
-- [x] `.env` não commitado no git (`.gitignore`)
-- [x] Secrets no Secrets Manager
-- [x] CloudFront com HTTPS
-- [x] API com rate limiting
-- [x] Lambda com timeout configurado
-- [x] S3 bucket não público (somente via CloudFront)
+- [README.md](README.md) - Documentação geral
+- [SETUP.md](SETUP.md) - Setup local e deploy
+- [.env.example](.env.example) - Template de configuração
+- **GitHub**: https://github.com/projetometaid/ecommerce
 
 ---
 
-## 📝 **9. Documentação Adicional**
+## ✅ **12. Status Final**
 
-### **Arquivos de Referência**:
-- `README.md` - Documentação geral do projeto
-- `SETUP.md` - Setup local detalhado
-- `terraform/outputs.tf` - Outputs do Terraform
-- `deploy.sh` - Script de deploy automatizado
+### **DEPLOY CONCLUÍDO COM SUCESSO** 🚀
 
-### **Links Úteis**:
-- AWS Console: https://console.aws.amazon.com/
-- Terraform Docs: https://registry.terraform.io/providers/hashicorp/aws/latest/docs
-- GTM Preview: https://tagmanager.google.com/
+**Versão Atual**: v1.2.0 (23/10/2025)
 
----
+**Recursos em Produção:**
+- ✅ Frontend: www.certificadodigital.br.com
+- ✅ Backend: Lambda + API Gateway
+- ✅ Pagamentos: PIX via Safe2Pay ✅ FUNCIONANDO
+- ✅ Validações: Safeweb (RFB, Biometria, Protocolos)
+- ✅ Analytics: GTM (GTM-WJR5MN66)
+- ✅ SSL: ACM Certificate (válido)
+- ✅ CDN: CloudFront (cache otimizado)
 
-## ✅ **10. Status Final**
+**Problemas Conhecidos:**
+- ✅ QR Code PIX - **RESOLVIDO** (v1.2.0)
 
-### **PRONTO PARA DEPLOY!** 🚀
-
-Todos os requisitos foram atendidos:
-- ✅ Credenciais AWS configuradas
-- ✅ Frontend otimizado (`public/`)
-- ✅ API funcional (`api_server.py` + Lambda)
-- ✅ Terraform configurado
-- ✅ Secrets organizados
-- ✅ GTM implementado
-- ✅ Scripts de deploy prontos
-
-### **Próximos Passos**:
-1. Criar `terraform.tfvars` com as secrets
-2. Executar `./deploy.sh`
-3. Aguardar criação da infraestrutura (~5-10 min)
-4. Acessar a URL do CloudFront
-5. Testar o checkout completo
-6. Configurar domínio customizado (opcional)
+**Próximos Passos:**
+1. Monitorar logs Lambda por 24h
+2. Verificar métricas CloudWatch
+3. Analisar conversões no GTM
+4. Configurar alarmes CloudWatch (opcional)
 
 ---
 
 ## 🆘 **Suporte**
 
-Em caso de problemas:
-1. Verificar logs: `aws logs tail /aws/lambda/ecommerce-certificado-api-prod --follow`
-2. Ver erros do Terraform: `terraform plan`
-3. Validar credenciais: `aws sts get-caller-identity`
-4. Destruir e recriar: `terraform destroy && terraform apply`
+**Em caso de problemas:**
+
+1. **Verificar logs**:
+   ```bash
+   aws logs tail /aws/lambda/ecommerce-certificado-api-prod --follow
+   ```
+
+2. **Ver outputs do Terraform**:
+   ```bash
+   cd terraform && terraform output
+   ```
+
+3. **Testar API diretamente**:
+   ```bash
+   curl https://u4w4tf2o4f.execute-api.us-east-1.amazonaws.com/api/health
+   ```
+
+4. **Abrir issue no GitHub**:
+   https://github.com/projetometaid/ecommerce/issues
 
 ---
 
-**Documento gerado em**: 2025-10-14
-**Versão**: 1.0
-**Mantido por**: Claude Code + Equipe de Desenvolvimento
+**Documento atualizado**: 23/10/2025
+**Versão**: 2.0
+**Mantido por**: Equipe de Desenvolvimento
