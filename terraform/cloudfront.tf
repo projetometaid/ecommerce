@@ -50,6 +50,12 @@ resource "aws_cloudfront_distribution" "frontend" {
       }
     }
 
+    # CloudFront Function para adicionar /index.html automaticamente
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.url_rewrite.arn
+    }
+
     min_ttl     = 0
     default_ttl = 3600  # 1 hora
     max_ttl     = 86400 # 24 horas
@@ -92,17 +98,18 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   # Página de erro customizada (SPA routing)
-  custom_error_response {
-    error_code         = 404
-    response_code      = 200
-    response_page_path = "/index.html"
-  }
+  # Removido redirecionamento automático para permitir estrutura multi-produto
+  # custom_error_response {
+  #   error_code         = 404
+  #   response_code      = 200
+  #   response_page_path = "/index.html"
+  # }
 
-  custom_error_response {
-    error_code         = 403
-    response_code      = 200
-    response_page_path = "/index.html"
-  }
+  # custom_error_response {
+  #   error_code         = 403
+  #   response_code      = 200
+  #   response_page_path = "/index.html"
+  # }
 
   tags = merge(local.common_tags, {
     Name = "Frontend CDN"
