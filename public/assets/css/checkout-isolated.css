@@ -139,6 +139,7 @@
     height: calc(530px - 52px); /* Altura total menos altura dos botões (44px + 8px margem) */
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
     /* Scrollbar customizada */
     scrollbar-width: thin;
     scrollbar-color: #d0d0d0 transparent;
@@ -639,22 +640,22 @@
 }
 
 #checkout-wrapper .qr-code-section {
-    margin-bottom: 12px; /* Reduzido de 20px */
+    margin-bottom: 8px; /* Comprimido para reduzir scroll */
 }
 
 #checkout-wrapper .qr-code {
-    max-width: 180px; /* Reduzido de 220px */
+    max-width: 160px; /* Comprimido de 180px */
     width: 100%;
-    min-height: 120px; /* Reduzido de 150px */
-    border: 2px solid #e9ecef;
-    border-radius: 8px; /* Reduzido de 10px */
-    margin: 0 auto 8px; /* Reduzido de 12px */
+    min-height: 100px; /* Comprimido de 120px */
+    border: 1px solid #e9ecef; /* Borda mais fina */
+    border-radius: 6px; /* Comprimido de 8px */
+    margin: 0 auto 6px; /* Comprimido de 8px */
     display: flex;
     align-items: center;
     justify-content: center;
     background: #f8f9fa;
     color: #666666;
-    padding: 6px; /* Reduzido de 8px */
+    padding: 4px; /* Comprimido de 6px */
 }
 
 #checkout-wrapper .qr-code img {
@@ -664,28 +665,28 @@
 }
 
 #checkout-wrapper .pix-copy-section {
-    margin-bottom: 20px;
+    margin-bottom: 12px; /* Comprimido de 20px */
 }
 
 #checkout-wrapper .pix-copy-section label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
+    margin-bottom: 6px; /* Comprimido de 8px */
+    font-size: 13px; /* Comprimido de 14px */
     font-weight: 500;
     color: #333333;
 }
 
 #checkout-wrapper .pix-code-container {
     display: flex;
-    gap: 8px;
+    gap: 6px; /* Comprimido de 8px */
     max-width: 400px;
     margin: 0 auto;
 }
 
 #checkout-wrapper .pix-code-container input {
     flex: 1;
-    padding: 12px;
-    border: 2px solid #d0d0d0;
+    padding: 8px 10px; /* Comprimido de 12px */
+    border: 1px solid #d0d0d0; /* Borda mais fina */
     border-radius: 10px;
     font-family: monospace;
     font-size: 12px;

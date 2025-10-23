@@ -19,15 +19,17 @@ export class Safe2PayRepository {
      */
     async criarPagamentoPIX(dados) {
         try {
+            // PIX DINÂMICO: Enviando dados do usuário para o backend
             const payload = {
-                nome_completo: dados.nomeCompleto || '',
+                valor: dados.valor || 8.00,
+                protocolo: dados.protocolo || '',
+                product_id: dados.product_id || 'ecpf-a1',
+                // Dados do cliente (aceita ambos os formatos: nomeCompleto e nome_completo)
+                nome_completo: dados.nome_completo || dados.nomeCompleto || '',
                 cpf: dados.cpf || '',
                 email: dados.email || '',
                 telefone: dados.telefone || '',
-                valor: dados.valor || 0,  // Valor (para validação no backend)
-                product_id: dados.product_id || 'ecpf-a1',  // ID do produto
-                protocolo: dados.protocolo || '',  // Número do protocolo Safeweb
-                // Dados de endereço para PIX Dinâmico
+                // Endereço
                 cep: dados.cep || '',
                 endereco: dados.endereco || '',
                 numero: dados.numero || '',
@@ -37,7 +39,11 @@ export class Safe2PayRepository {
                 uf: dados.uf || ''
             };
 
-            console.log('📤 Safe2PayRepository: Criando PIX Dinâmico via backend...', payload);
+            console.log('📤 Safe2PayRepository: Criando PIX Dinâmico com dados do usuário via backend...', {
+                ...payload,
+                cpf: payload.cpf ? '***' + payload.cpf.slice(-3) : '',
+                telefone: payload.telefone ? '***' + payload.telefone.slice(-4) : ''
+            });
 
             const response = await fetch(`${this.backendURL}/api/pix/create`, {
                 method: 'POST',
@@ -63,7 +69,7 @@ export class Safe2PayRepository {
                     transactionId: resultado.dados.transactionId,
                     qrCodeImage: resultado.dados.qrCodeImage,
                     qrCode: resultado.dados.qrCode,
-                    pixCopiaECola: resultado.dados.qrCode,
+                    pixCopiaECola: resultado.dados.pixCopiaECola || resultado.dados.qrCode,
                     valor: dados.valor,
                     referencia: resultado.dados.reference,
                     dataExpiracao: null

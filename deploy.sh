@@ -90,9 +90,8 @@ echo "📤 FASE 5: Fazendo upload do frontend para S3..."
 
 BUCKET_NAME=$(terraform output -raw s3_bucket_name)
 
-aws s3 sync ../index.html s3://$BUCKET_NAME/ --exclude ".git/*" --exclude "node_modules/*"
-aws s3 sync ../src s3://$BUCKET_NAME/src/ --exclude ".git/*"
-aws s3 sync ../assets s3://$BUCKET_NAME/assets/
+# Upload do diretório public (landing page + checkout)
+aws s3 sync ../public/ s3://$BUCKET_NAME/ --exclude ".git/*" --exclude "node_modules/*" --delete
 
 log_info "Frontend enviado para S3: $BUCKET_NAME"
 

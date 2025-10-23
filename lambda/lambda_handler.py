@@ -30,7 +30,7 @@ PRODUCT_CATALOG = {
     'ecpf-a1': {
         'code': '001',
         'description': 'Certificado Digital e-CPF A1 (1 ano)',
-        'price': 5.00,
+        'price': 8.00,
         'tipo': 'e-CPF',
         'validade': 1  # anos
     },
@@ -286,9 +286,11 @@ class Safe2PayAPI:
         self.pix_expiration = 30
 
     def create_pix_payment(self, dados_checkout):
-        is_valid, erros = Validator.validate_checkout_data(dados_checkout)
-        if not is_valid:
-            return {'sucesso': False, 'erro': 'Dados inválidos', 'detalhes': erros}
+        """Criar pagamento PIX Dinâmico - OTIMIZADO"""
+
+        # OTIMIZAÇÃO: Validação mínima para máxima velocidade
+        if not dados_checkout.get('protocolo'):
+            return {'sucesso': False, 'erro': 'Protocolo é obrigatório'}
 
         try:
             # VALIDAÇÃO DE SEGURANÇA: Obter produto do catálogo (source of truth)
@@ -306,64 +308,87 @@ class Safe2PayAPI:
 
             # VALIDAÇÃO CRÍTICA: Verificar se valor enviado corresponde ao catálogo
             valor_enviado = dados_checkout.get('valor')
+
+            # 🔍 LOG DETALHADO PARA DEBUG
+            print(f"=" * 80)
+            print(f"🔍 DEBUG - VALIDAÇÃO DE PREÇO")
+            print(f"=" * 80)
+            print(f"📦 Product ID: {product_id}")
+            print(f"💰 Valor no catálogo: R$ {product['price']} (tipo: {type(product['price'])})")
+            print(f"📥 Valor recebido (raw): {repr(valor_enviado)} (tipo: {type(valor_enviado)})")
+            print(f"📋 Dados completos recebidos: {dados_checkout}")
+            print(f"=" * 80)
+
             if valor_enviado is not None:
                 valor_enviado = float(valor_enviado)
-                if abs(valor_enviado - product['price']) > 0.01:  # Tolerância de 1 centavo
-                    print(f"🚨 TENTATIVA DE FRAUDE DETECTADA!")
+                print(f"📥 Valor recebido (convertido): {valor_enviado} (tipo: {type(valor_enviado)})")
+                print(f"🔢 Diferença: {abs(valor_enviado - product['price'])}")
+
+                # TEMPORÁRIO: Aceitar 5.00 OU 8.00 devido a cache CloudFront
+                valores_aceitos = [5.00, 8.00]
+                valor_valido = any(abs(valor_enviado - v) <= 0.01 for v in valores_aceitos)
+
+                if not valor_valido:
+                    print(f"🚨 VALOR INVÁLIDO!")
                     print(f"   - Valor enviado: R$ {valor_enviado}")
                     print(f"   - Valor correto: R$ {product['price']}")
-                    print(f"   - CPF: {mask_cpf(dados_checkout.get('cpf'))}")  # ✅ MASCARADO
+                    print(f"=" * 80)
                     return {
                         'sucesso': False,
                         'erro': 'Valor inválido',
-                        'detalhes': 'O valor enviado não corresponde ao produto selecionado'
+                        'detalhes': f'Valor enviado (R$ {valor_enviado}) não corresponde'
                     }
+                else:
+                    if abs(valor_enviado - 5.00) <= 0.01:
+                        print(f"⚠️  Valor antigo R$ 5.00 aceito temporariamente")
+                    print(f"✅ Validação OK!")
+                    print(f"=" * 80)
 
-            print(f"✅ Validação de preço OK: R$ {product['price']}")
+            # OTIMIZADO: PIX Dinâmico (com apenas dados essenciais)
+            protocolo = dados_checkout.get('protocolo', f"ECPF-{datetime.now().strftime('%Y%m%d%H%M%S')}")
 
-            # Limpar CPF (remover formatação)
-            cpf_limpo = re.sub(r'\D', '', dados_checkout.get('cpf', ''))
-            telefone_limpo = re.sub(r'\D', '', dados_checkout.get('telefone', ''))
-            cep_limpo = re.sub(r'\D', '', dados_checkout.get('cep', ''))
+            # Safe2Pay exige descrição com no máximo 30 caracteres
+            description_short = product['description'][:30] if len(product['description']) > 30 else product['description']
 
-            # Obter número do protocolo Safeweb (usar como Reference)
-            protocolo = dados_checkout.get('protocolo')
-            if not protocolo:
-                print("⚠️ Protocolo Safeweb não fornecido, gerando reference genérica")
-                protocolo = f"ECPF-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            # PIX DINÂMICO: Usar dados do formulário do usuário
+            # Limpar CPF e CEP (remover formatação)
+            cpf_raw = str(dados_checkout.get('cpf', ''))
+            cpf = cpf_raw.replace('.', '').replace('-', '').replace(' ', '').strip()
 
-            # Criar payload PIX Dinâmico (v2/Payment) - USAR VALORES DO CATÁLOGO
+            cep_raw = str(dados_checkout.get('cep', ''))
+            cep = cep_raw.replace('-', '').replace(' ', '').strip()
+
+            print(f"📋 CPF recebido: '{cpf_raw}' → limpo: '{cpf}' (len={len(cpf)})")
+            print(f"📋 CEP recebido: '{cep_raw}' → limpo: '{cep}' (len={len(cep)})")
+
             payment_data = {
                 "IsSandbox": False,
-                "Application": "E-commerce Certificado Digital",
+                "Application": "Certificado Digital",
                 "Vendor": "Certificado Campinas",
                 "CallbackUrl": "https://u4w4tf2o4f.execute-api.us-east-1.amazonaws.com/webhook/safe2pay",
                 "PaymentMethod": "6",  # PIX
-                "Reference": str(protocolo),  # Usar número do protocolo Safeweb
+                "Reference": str(protocolo),
                 "Customer": {
-                    "Name": dados_checkout.get('nome_completo', ''),
-                    "Identity": cpf_limpo,
-                    "Phone": telefone_limpo,
-                    "Email": dados_checkout.get('email', ''),
+                    "Name": dados_checkout.get('nome_completo', 'Cliente'),
+                    "Identity": cpf,
                     "Address": {
-                        "ZipCode": cep_limpo,
-                        "Street": dados_checkout.get('endereco', ''),
-                        "Number": dados_checkout.get('numero', ''),
-                        "Complement": dados_checkout.get('complemento', ''),
-                        "District": dados_checkout.get('bairro', ''),
-                        "CityName": dados_checkout.get('cidade', ''),
-                        "StateInitials": dados_checkout.get('uf', ''),
+                        "ZipCode": cep or "00000000",
+                        "Street": dados_checkout.get('endereco', 'Rua'),
+                        "Number": dados_checkout.get('numero', 'S/N'),
+                        "District": dados_checkout.get('bairro', 'Centro'),
+                        "CityName": dados_checkout.get('cidade', 'Cidade'),
+                        "StateInitials": dados_checkout.get('uf', 'SP'),
                         "CountryName": "Brasil"
                     }
                 },
                 "PaymentObject": {
-                    "Expiration": 600  # 10 minutos em segundos
+                    "Expiration": 1296000  # 15 dias (15 dias × 24h × 60min × 60s)
                 },
                 "Products": [
                     {
                         "Code": product['code'],
-                        "Description": product['description'],
-                        "UnitPrice": product['price'],  # ✅ SEMPRE DO CATÁLOGO
+                        "Description": description_short,
+                        "UnitPrice": product['price'],
                         "Quantity": 1
                     }
                 ]
@@ -374,15 +399,12 @@ class Safe2PayAPI:
                 'X-API-KEY': self.token
             }
 
-            # 🔒 Mascara dados sensíveis para log
-            masked_payment_data = mask_sensitive_data(payment_data)
-            print(f"📤 Enviando PIX Dinâmico para Safe2Pay: {json.dumps(masked_payment_data, indent=2, ensure_ascii=False)}")
-
+            # OTIMIZADO: Chamada rápida sem logs pesados
             response = requests.post(
-                f"{self.api_url}/Payment",  # Mudado de /staticPix para /Payment
+                f"{self.api_url}/Payment",
                 json=payment_data,
                 headers=headers,
-                timeout=30
+                timeout=10  # OTIMIZADO: 10s
             )
 
             if response.status_code in [200, 201]:
@@ -397,27 +419,25 @@ class Safe2PayAPI:
                     }
 
                 response_detail = result.get('ResponseDetail', {})
+                # Safe2Pay retorna Key e QrCode direto no ResponseDetail, não em PaymentObject
+                pix_key = response_detail.get('Key', '')
+                qr_code_image = response_detail.get('QrCode', '')
 
-                print(f"📋 ResponseDetail.IdTransaction extraído: {response_detail.get('IdTransaction')}")
-                print(f"📋 ResponseDetail completo: {json.dumps(response_detail, indent=2)}")
+                print(f"📋 ResponseDetail.IdTransaction: {response_detail.get('IdTransaction')}")
+                print(f"📋 ResponseDetail.Key (PIX): {pix_key[:50]}..." if pix_key else "None")
+                print(f"📋 ResponseDetail.QrCode: {qr_code_image}")
 
                 return {
                     'sucesso': True,
                     'dados': {
                         'transactionId': str(response_detail.get('IdTransaction')),
-                        'qrCode': response_detail.get('Key'),
-                        'qrCodeImage': response_detail.get('QrCode'),
-                        'pixCopiaECola': response_detail.get('Key'),
-                        'valor': 5.00,
+                        'qrCode': pix_key,
+                        'qrCodeImage': qr_code_image,
+                        'pixCopiaECola': pix_key,
+                        'valor': product['price'],
                         'status': 'pending',
                         'reference': payment_data['Reference'],
-                        'dadosCliente': {
-                            'nome': dados_checkout.get('nome_completo'),
-                            'cpf': cpf_limpo,
-                            'email': dados_checkout.get('email'),
-                            'telefone': telefone_limpo
-                        },
-                        'expiresAt': (datetime.now() + timedelta(minutes=10)).isoformat()
+                        'expiresAt': (datetime.now() + timedelta(minutes=30)).isoformat()
                     }
                 }
             else:
@@ -450,18 +470,29 @@ class Safe2PayAPI:
                 }
 
             # Se não estiver no cache, consultar API Safe2Pay
+            # IMPORTANTE: Endpoint correto é /transaction/get na api.safe2pay.com.br (não payment.safe2pay.com.br)
             headers = {'X-API-KEY': self.token}
+            api_query_url = "https://api.safe2pay.com.br/v2"
             response = requests.get(
-                f"{self.api_url}/Payment/{transaction_id}",
+                f"{api_query_url}/transaction/get",
+                params={'id': transaction_id},
                 headers=headers,
                 timeout=30
             )
 
             if response.status_code == 200:
                 result = response.json()
+                response_detail = result.get('ResponseDetail', {})
+                status_code = response_detail.get('Status', 'unknown')
+                status_message = response_detail.get('Message', 'unknown')
+
+                # Mapear código de status para texto
+                # 1=Pendente, 3=Autorizado (Pago), 16=Expirado, 6=Estornado
                 return {
                     'sucesso': True,
-                    'status': result.get('PaymentStatus', 'unknown'),
+                    'status': status_message.lower() if status_message else 'unknown',
+                    'statusCode': status_code,
+                    'statusMessage': status_message,
                     'dados': result
                 }
             else:
@@ -719,18 +750,9 @@ class SafewebAPI:
     def criar_solicitacao_hope(self, protocol):
         """Cria solicitação Hope para upload de documentos"""
         try:
-            # PRIMEIRO: Liberar pagamento na Safeweb
-            print(f"📋 Passo 1/2: Liberando pagamento na Safeweb...")
-            liberacao_result = self.liberar_pagamento(protocol)
+            import concurrent.futures
 
-            if not liberacao_result.get('sucesso'):
-                print(f"⚠️ Aviso: Liberação de pagamento falhou, mas continuando...")
-                # Não vamos bloquear se a liberação falhar, apenas registrar
-
-            # SEGUNDO: Criar solicitação Hope
-            print(f"📋 Passo 2/2: Criando solicitação Hope...")
-
-            # Autenticar e obter token
+            # Autenticar uma vez antes de paralelizar
             if not self.token or not self.token_expiry:
                 self.authenticate()
 
@@ -741,22 +763,42 @@ class SafewebAPI:
             if not hope_url:
                 raise Exception("SAFEWEB_HOPE_API_URL não configurado")
 
-            headers = {
-                'Authorization': f'bearer {self.token}',
-                'Content-Type': 'application/json'
-            }
+            print(f"🚀 Executando liberação e criação Hope em paralelo...")
 
-            payload = {
-                'protocol': protocol,
-                'attendancePlaceId': attendance_place_id,
-                'aciRemovalCandidate': False
-            }
+            # Executar PARALELAMENTE (otimização de performance)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+                # Iniciar ambas as chamadas simultaneamente
+                future_liberacao = executor.submit(self.liberar_pagamento, protocol)
 
-            print(f"🔄 Chamando Hope API: {hope_url}")
-            response = requests.post(hope_url, headers=headers, json=payload, timeout=30)
+                # Preparar chamada Hope
+                def chamar_hope():
+                    headers = {
+                        'Authorization': f'bearer {self.token}',
+                        'Content-Type': 'application/json'
+                    }
+                    payload = {
+                        'protocol': protocol,
+                        'attendancePlaceId': attendance_place_id,
+                        'aciRemovalCandidate': False
+                    }
+                    print(f"🔄 Chamando Hope API: {hope_url}")
+                    return requests.post(hope_url, headers=headers, json=payload, timeout=30)
 
-            if response.status_code == 200:
-                result = response.json()
+                future_hope = executor.submit(chamar_hope)
+
+                # Aguardar ambas (executam em paralelo)
+                liberacao_result = future_liberacao.result()
+                hope_response = future_hope.result()
+
+            # Verificar resultado da liberação (apenas log, não bloqueia)
+            if not liberacao_result.get('sucesso'):
+                print(f"⚠️ Aviso: Liberação de pagamento falhou, mas continuando...")
+            else:
+                print(f"✅ Pagamento liberado na Safeweb")
+
+            # Processar resposta Hope
+            if hope_response.status_code == 200:
+                result = hope_response.json()
                 upload_url = result.get('url')
                 print(f"✅ Solicitação Hope criada com sucesso")
                 print(f"📎 URL de upload: {upload_url}")
@@ -767,7 +809,7 @@ class SafewebAPI:
                     'emailEnviado': result.get('emailSend', False)
                 }
             else:
-                error_msg = f"HTTP {response.status_code}: {response.text}"
+                error_msg = f"HTTP {hope_response.status_code}: {hope_response.text}"
                 print(f"❌ Erro na API Hope: {error_msg}")
                 return {
                     'sucesso': False,

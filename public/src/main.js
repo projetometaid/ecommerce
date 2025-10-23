@@ -37,6 +37,9 @@ import { PagadorModal } from './presentation/components/PagadorModal.js';
 // ===== ENTITIES =====
 import { Certificado } from './domain/entities/Certificado.js';
 
+// ===== UTILS =====
+import { MobileUtils } from './shared/utils/MobileUtils.js';
+
 /**
  * 🏗️ Application - Classe principal da aplicação
  */
@@ -550,6 +553,9 @@ class Application {
 // Aguardar DOM estar pronto
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('📄 DOM carregado, inicializando aplicação...');
+
+    // Inicializar otimizações mobile PRIMEIRO
+    MobileUtils.init();
 
     // Criar e inicializar aplicação
     window.app = new Application();

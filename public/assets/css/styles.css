@@ -27,6 +27,32 @@ body {
 }
 
 /* ===================================
+   MOBILE OPTIMIZATIONS
+   =================================== */
+/* Remove delay de 300ms em todos os elementos clicáveis (iOS/Android) */
+button,
+a,
+.btn,
+.button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+label,
+select {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Scroll suave nativo em iOS (webkit) para containers scrolláveis */
+[style*="overflow-y: auto"],
+[style*="overflow: auto"],
+.modal-content,
+.checkout-wrapper,
+.step-content {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ===================================
    CONTAINER
    =================================== */
 .container {

@@ -57,24 +57,30 @@ export class Step1Controller {
      */
     async loadHorarios() {
         try {
-            this.view.showLoading();
+            console.log('🔄 Step1Controller.loadHorarios: INICIANDO');
+            console.log('   - this.view:', this.view);
+            console.log('   - this.useCase:', this.useCase);
 
             // Obter horários do Use Case
+            console.log('🔄 Chamando getHorariosDisponiveis...');
             this.horarios = this.useCase.getHorariosDisponiveis();
+            console.log('📋 Horários recebidos:', this.horarios.length, 'itens');
+            console.log('   - Primeiro horário:', this.horarios[0]);
 
             if (this.horarios.length === 0) {
-                this.view.showNoHorarios();
+                console.warn('⚠️ NENHUM HORÁRIO DISPONÍVEL!');
                 return;
             }
 
             // Renderizar horários
+            console.log('🎨 Chamando view.renderHorarios...');
             this.view.renderHorarios(this.horarios);
 
             console.log(`✅ Step1Controller: ${this.horarios.length} horários carregados`);
 
         } catch (error) {
-            console.error('❌ Step1Controller: Erro ao carregar horários:', error);
-            this.view.showError('Erro ao carregar horários. Tente novamente.');
+            console.error('❌ Step1Controller: ERRO ao carregar horários:', error);
+            console.error('   Stack:', error.stack);
         }
     }
 
@@ -172,7 +178,7 @@ export class Step1Controller {
                     codigo: 'ecpf-a1',
                     nome: 'e-CPF A1 (1 ano)',
                     tipo: 'e-CPF',
-                    preco: 5.00
+                    preco: 8.00
                 });
 
                 console.log('✅ Step1Controller: Horário selecionado:', timeString);

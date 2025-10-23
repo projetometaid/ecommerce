@@ -1,9 +1,3 @@
-/**
- * Configurações da Aplicação
- *
- * SOLID: SRP - Centraliza todas as configurações da aplicação
- * Pattern: Singleton Pattern
- */
 export class Config {
     static instance = null;
 
@@ -12,31 +6,25 @@ export class Config {
             return Config.instance;
         }
 
-        // Detectar ambiente (produção vs desenvolvimento)
         const isProd = window.location.hostname !== 'localhost' &&
                       window.location.hostname !== '127.0.0.1';
 
-        // Configurações Safeweb - CREDENCIAIS REMOVIDAS (SEGURANÇA)
-        // ⚠️ IMPORTANTE: Credenciais agora estão APENAS no backend (.env ou AWS Secrets)
-        // Todas as chamadas passam pelo proxy backend
+        const devApiUrl = `http://${window.location.hostname}:8082`;
+        
         this.safeweb = {
-            baseURL: 'https://pss.safewebpss.com.br',  // Apenas informativo
+            baseURL: 'https://pss.safewebpss.com.br',
             backendProxyURL: isProd
-                ? 'https://d2iucdo1dmk5az.cloudfront.net/api/safeweb'
-                : 'http://localhost:8082/api/safeweb'
+                ? 'https://u4w4tf2o4f.execute-api.us-east-1.amazonaws.com/api/safeweb'
+                : `${devApiUrl}/api/safeweb`
         };
 
-        // Configurações Safe2Pay - CREDENCIAIS REMOVIDAS (SEGURANÇA)
-        // ⚠️ IMPORTANTE: Token e SecretKey agora estão APENAS no backend (.env ou AWS Secrets)
-        // Todas as chamadas passam pelo proxy backend
         this.safe2pay = {
-            baseURL: 'https://payment.safe2pay.com.br/v2',  // Apenas informativo
+            baseURL: 'https://api.safe2pay.com.br/v2',
             backendProxyURL: isProd
-                ? 'https://d2iucdo1dmk5az.cloudfront.net/api/pix'
-                : 'http://localhost:8082/api/pix'
+                ? 'https://u4w4tf2o4f.execute-api.us-east-1.amazonaws.com/api/pix'
+                : `${devApiUrl}/api/pix`
         };
 
-        // Configurações gerais
         this.app = {
             environment: isProd ? 'production' : 'development',
             debugMode: !isProd
@@ -65,5 +53,4 @@ export class Config {
     }
 }
 
-// Exportar instância singleton
 export const config = new Config();

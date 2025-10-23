@@ -62,14 +62,14 @@ export class Step5Controller {
             // 📊 Disparar evento GTM: Pagamento PIX gerado
             gtmService.trackAddPaymentInfo(
                 {
-                    valor: resultado.pagamento.valor || 5.00,
+                    valor: resultado.pagamento.valor || 8.00,
                     transactionId: resultado.pagamento.transactionId
                 },
                 {
                     codigo: 'ecpf-a1',
                     nome: 'e-CPF A1 (1 ano)',
                     tipo: 'e-CPF',
-                    preco: resultado.pagamento.valor || 5.00
+                    preco: resultado.pagamento.valor || 8.00
                 }
             );
 
@@ -109,15 +109,35 @@ export class Step5Controller {
             btnNext.addEventListener('click', () => this.handleVerificarPagamento());
         }
 
-        // Botão de TESTE (apenas localhost)
-        const btnTest = document.getElementById('btn-test-payment');
-        if (btnTest) {
-            btnTest.addEventListener('click', () => {
-                console.log('🧪 TESTE: Simulando pagamento aprovado');
-                this.stopMonitoring();
-                this.handlePagamentoAprovado();
-            });
-        }
+        // Botão de TESTE - Tentar múltiplas vezes até encontrar
+        let tentativas = 0;
+        const maxTentativas = 10;
+        const intervalo = setInterval(() => {
+            tentativas++;
+            const btnTest = document.getElementById('btn-test-payment');
+
+            if (btnTest) {
+                console.log(`✅ Botão de teste encontrado na tentativa ${tentativas}! Configurando evento...`);
+                clearInterval(intervalo);
+
+                // Remover listeners antigos (se houver)
+                const newBtn = btnTest.cloneNode(true);
+                btnTest.parentNode.replaceChild(newBtn, btnTest);
+
+                // Adicionar novo listener
+                newBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🧪 TESTE: Botão clicado! Simulando pagamento aprovado...');
+                    this.stopMonitoring();
+                    this.handlePagamentoAprovado();
+                });
+            } else if (tentativas >= maxTentativas) {
+                console.log(`⚠️ Botão de teste não encontrado após ${tentativas} tentativas`);
+                clearInterval(intervalo);
+            }
+        }, 200);
+
     }
 
     /**
@@ -147,7 +167,7 @@ export class Step5Controller {
             }
 
             // 📊 Disparar evento GTM: Código PIX copiado
-            gtmService.trackPixCopied(this.pagamentoAtual?.valor || 5.00);
+            gtmService.trackPixCopied(this.pagamentoAtual?.valor || 8.00);
 
             console.log('✅ Código PIX copiado');
 
@@ -183,9 +203,12 @@ export class Step5Controller {
 
             if (resultado.sucesso) {
                 const status = resultado.status;
+                const statusCode = resultado.statusCode;
 
-                // Status 3 = Aprovado
-                if (status === 3 || status === '3') {
+                // Status 3 = Aprovado - verifica AMBOS statusCode E status (string)
+                if (statusCode === 3 || statusCode === '3' || status === 3 || status === '3' ||
+                    status?.toLowerCase() === 'autorizado' || status?.toLowerCase() === 'approved' ||
+                    status?.toLowerCase() === 'paid' || status?.toLowerCase() === 'pago') {
                     console.log('🎉 Pagamento aprovado!');
                     this.handlePagamentoAprovado();
                 }
@@ -196,8 +219,8 @@ export class Step5Controller {
                 }
                 // Outros status
                 else {
-                    console.log(`📊 Status atual: ${resultado.statusDescricao}`);
-                    alert(`Status do pagamento: ${resultado.statusDescricao}`);
+                    console.log(`📊 Status atual: ${resultado.statusDescricao || status}`);
+                    alert(`Status do pagamento: ${resultado.statusDescricao || status}`);
                 }
             }
 
@@ -210,7 +233,7 @@ export class Step5Controller {
     /**
      * Inicia monitoramento automático do pagamento
      */
-    startMonitoring(transactionId) {
+    async startMonitoring(transactionId) {
         if (!transactionId) {
             console.warn('⚠️ Transaction ID não fornecido');
             return;
@@ -221,27 +244,61 @@ export class Step5Controller {
         // Parar monitoramento anterior se existir
         this.stopMonitoring();
 
+        // Mostrar indicador de checagem ativa
+        const statusIndicator = document.querySelector('.pix-status-indicator');
+        if (statusIndicator) {
+            statusIndicator.style.display = 'block';
+            statusIndicator.textContent = 'Aguardando processamento do PIX...';
+        }
+
+        // OTIMIZAÇÃO: Aguardar 5 segundos antes de começar a consultar
+        // Safe2Pay precisa de tempo para processar a transação antes de disponibilizar para consulta
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
         let checkCount = 0;
-        const maxChecks = 600; // 30 minutos (600 x 3 segundos)
+        const maxChecks = 1800; // 30 minutos (1800 x 1 segundo) - OTIMIZADO
+        const SHOW_TIMEOUT_ALERT_AFTER = 90; // Mostrar alerta após 90 segundos (1m30s)
 
         this.monitoringInterval = setInterval(async () => {
             checkCount++;
+
+            // Atualizar contador no texto principal (em segundos)
+            const paymentCheckText = document.getElementById('payment-check-text');
+            if (paymentCheckText) {
+                const segundosTexto = checkCount === 1 ? 'segundo' : 'segundos';
+                paymentCheckText.textContent = `Aguardando pagamento (${checkCount} ${segundosTexto})`;
+            }
+
+            // Mostrar alerta de timeout após 1m30s
+            if (checkCount === SHOW_TIMEOUT_ALERT_AFTER) {
+                const timeoutAlert = document.getElementById('payment-timeout-alert');
+                if (timeoutAlert) {
+                    timeoutAlert.style.display = 'block';
+                    console.log('⏱️ Exibindo alerta de timeout (1m30s)');
+                }
+            }
 
             try {
                 const resultado = await this.safe2PayRepository.consultarStatusPagamento(transactionId);
 
                 if (resultado.sucesso) {
                     const status = resultado.status;
-                    console.log(`📊 Status (check ${checkCount}): ${resultado.statusDescricao}`);
+                    const statusCode = resultado.statusCode;
+                    console.log(`📊 Status (check ${checkCount}): ${resultado.statusDescricao || status} (código ${statusCode})`);
 
-                    // Status aprovado
-                    if (status === 3 || status === '3') {
+                    // Converter status para string se for número
+                    const statusStr = typeof status === 'string' ? status.toLowerCase() : '';
+
+                    // Status aprovado - verifica AMBOS statusCode E status
+                    if (statusCode === 3 || statusCode === '3' || status === 3 || status === '3' ||
+                        statusStr === 'autorizado' || statusStr === 'approved' ||
+                        statusStr === 'paid' || statusStr === 'pago') {
                         console.log('🎉 Pagamento aprovado!');
                         this.handlePagamentoAprovado();
                         this.stopMonitoring();
                     }
                     // Status expirado/cancelado
-                    else if (status === 9 || status === 4) {
+                    else if (status === 9 || status === 4 || statusCode === 9 || statusCode === 4) {
                         console.log('⏰ Pagamento expirado/cancelado');
                         this.stopMonitoring();
                     }
@@ -256,9 +313,9 @@ export class Step5Controller {
             } catch (error) {
                 console.error('❌ Erro ao verificar status:', error.message);
             }
-        }, 3000); // Verificar a cada 3 segundos
+        }, 1000); // OTIMIZADO: Verificar a cada 1 segundo (antes era 3s)
 
-        console.log('✅ Monitoramento iniciado (verifica a cada 3s)');
+        console.log('✅ Monitoramento iniciado (verifica a cada 1s - OTIMIZADO)');
     }
 
     /**
@@ -290,9 +347,9 @@ export class Step5Controller {
                 codigo: 'ecpf-a1',
                 nome: 'e-CPF A1 (1 ano)',
                 tipo: 'e-CPF',
-                preco: this.pagamentoAtual?.valor || 5.00
+                preco: this.pagamentoAtual?.valor || 8.00
             },
-            valor: this.pagamentoAtual?.valor || 5.00,
+            valor: this.pagamentoAtual?.valor || 8.00,
             email: clienteEmail,
             telefone: clienteTelefone
         });
@@ -319,10 +376,12 @@ export class Step5Controller {
                         "></div>
                     </div>
                     <div style="color: #155724; font-weight: bold; font-size: 20px; margin-bottom: 12px;">
-                        Pagamento Confirmado!
+                        ✓ Pagamento Confirmado!
                     </div>
-                    <div style="color: #155724; font-size: 16px;">
-                        Estamos direcionando você para importar o documento de identificação oficial
+                    <div id="progress-steps" style="color: #155724; font-size: 14px; margin-top: 20px; text-align: left; max-width: 350px; margin-left: auto; margin-right: auto;">
+                        <div style="margin: 8px 0; font-weight: bold !important; transition: all 0.3s ease;">⏳ Liberando seu protocolo...</div>
+                        <div style="margin: 8px 0; opacity: 0.5; transition: all 0.3s ease;">⏳ Gerando link de upload...</div>
+                        <div style="margin: 8px 0; opacity: 0.5; transition: all 0.3s ease;">⏳ Redirecionando...</div>
                     </div>
                 </div>
                 <style>
@@ -342,18 +401,39 @@ export class Step5Controller {
 
         // Chamar API Hope para criar solicitação e obter link de upload
         try {
-            const protocolo = this.checkoutData?.protocolo;
+            // Tentar pegar protocolo de várias fontes
+            let protocolo = this.checkoutData?.protocolo;
+
+            // Se não tem no checkoutData, tenta buscar do localStorage
+            if (!protocolo) {
+                console.log('⚠️ Protocolo não encontrado no checkoutData, buscando no localStorage...');
+                const checkoutDataStr = localStorage.getItem('checkoutData');
+                if (checkoutDataStr) {
+                    const checkoutData = JSON.parse(checkoutDataStr);
+                    protocolo = checkoutData?.protocolo;
+                    console.log('📦 Dados recuperados do localStorage:', checkoutData);
+                }
+            }
 
             if (!protocolo) {
-                console.error('❌ Protocolo não encontrado no checkoutData');
+                console.error('❌ Protocolo não encontrado em nenhum lugar!');
+                console.error('CheckoutData atual:', this.checkoutData);
+                alert('Erro: Protocolo não encontrado. Por favor, reinicie o processo.');
                 return;
             }
 
             console.log('🔄 Chamando API Hope para protocolo:', protocolo);
 
+            // Atualizar primeiro passo com número do protocolo
+            const progressSteps = document.querySelectorAll('#progress-steps div');
+            if (progressSteps[0]) {
+                progressSteps[0].innerHTML = `⏳ Liberando seu protocolo ${protocolo}`;
+            }
+
             // Detectar URL da API (localhost ou produção)
+            // IMPORTANTE: Usar o mesmo hostname (localhost ou 127.0.0.1) para evitar CORS
             const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? 'http://localhost:8082'
+                ? `http://${window.location.hostname}:8082`
                 : '';
 
             const response = await fetch(`${apiUrl}/api/hope/create-solicitation`, {
@@ -370,18 +450,52 @@ export class Step5Controller {
                 console.log('✅ Solicitação Hope criada com sucesso');
                 console.log('📎 URL de upload:', result.uploadUrl);
 
+                // Passo 1: Protocolo liberado (delay 1s para visualização)
+                if (progressSteps[0]) {
+                    progressSteps[0].innerHTML = `✓ Protocolo ${protocolo} liberado`;
+                    progressSteps[0].style.setProperty('font-weight', 'bold', 'important');
+                }
+                if (progressSteps[1]) {
+                    progressSteps[1].innerHTML = '⏳ Gerando link de upload...';
+                    progressSteps[1].style.opacity = '1';
+                    progressSteps[1].style.setProperty('font-weight', 'bold', 'important');
+                }
+
+                // Aguardar 1.5 segundos para visualização
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Passo 2: Link gerado (delay 1.5s para visualização)
+                if (progressSteps[1]) {
+                    progressSteps[1].innerHTML = '✓ Link gerado com sucesso';
+                    progressSteps[1].style.setProperty('font-weight', 'bold', 'important');
+                }
+                if (progressSteps[2]) {
+                    progressSteps[2].innerHTML = '⏳ Redirecionando...';
+                    progressSteps[2].style.opacity = '1';
+                    progressSteps[2].style.setProperty('font-weight', 'bold', 'important');
+                }
+
+                // Aguardar 1.5 segundos para visualização
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Passo 3: Redirecionando
+                if (progressSteps[2]) {
+                    progressSteps[2].innerHTML = '✓ Redirecionando...';
+                }
+
                 // Salvar URL de upload para passar ao Step 6
                 this.uploadUrl = result.uploadUrl;
 
-                // Aguardar 2 segundos e avançar para Step 6
-                setTimeout(() => {
-                    document.dispatchEvent(new CustomEvent('changeStep', {
-                        detail: {
-                            step: 6,
-                            uploadUrl: result.uploadUrl
-                        }
-                    }));
-                }, 2000);
+                // Aguardar 800ms antes de redirecionar
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                // Avançar para Step 6
+                document.dispatchEvent(new CustomEvent('changeStep', {
+                    detail: {
+                        step: 6,
+                        uploadUrl: result.uploadUrl
+                    }
+                }));
             } else {
                 console.error('❌ Erro ao criar solicitação Hope:', result.erro);
                 alert('Erro ao preparar upload de documentos. Por favor, entre em contato com o suporte.');

@@ -337,7 +337,7 @@ export class Step2Controller {
                     codigo: 'ecpf-a1',
                     nome: 'e-CPF A1 (1 ano)',
                     tipo: 'e-CPF',
-                    preco: 5.00
+                    preco: 8.00
                 });
 
                 // 📊 Enviar dados do usuário para Enhanced Conversions
@@ -491,7 +491,7 @@ export class Step2Controller {
                         codigo: 'ecpf-a1',
                         nome: 'e-CPF A1 (1 ano)',
                         tipo: 'e-CPF',
-                        preco: 5.00
+                        preco: 8.00
                     }
                 );
 

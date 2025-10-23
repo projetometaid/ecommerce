@@ -61,7 +61,7 @@ export class Certificado {
         return new Certificado(
             'ecpf',
             'e-CPF A1 (1 ano)',
-            5.00,
+            8.00,
             'Certificado Digital e-CPF A1 com validade de 1 ano - Videoconferência',
             1,
             '37341' // Código do produto e-CPF A1 na Safeweb (do .env)

@@ -47,19 +47,27 @@ logs/
 .cache/
 *.backup
 
-# ===== Terraform (para deploy) =====
+# ===== Terraform (estado e arquivos locais) =====
 .terraform/
 *.tfstate
 *.tfstate.backup
 .terraform.lock.hcl
 terraform.tfvars
+tfplan
+
+# ===== Lambda builds (gerados pelo build.sh) =====
+lambda.zip
+lambda/dist/
+lambda/layers/python/
+lambda/layers/*.zip
+lambda/*.zip
 
 # ===== AWS =====
 .aws/
-*.pem
 
 # ===== Documentação gerada =====
+# Permite apenas README.md e SETUP.md
 *.md
 !README.md
 !SETUP.md
-terraform/terraform.tfvars
+!AWS_DEPLOY_CHECKLIST.md

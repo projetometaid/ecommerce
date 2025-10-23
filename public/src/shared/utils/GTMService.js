@@ -58,14 +58,14 @@ export class GTMService {
             event: 'begin_checkout',
             ecommerce: {
                 currency: 'BRL',
-                value: productData.preco || 5.00,
+                value: productData.preco || 8.00,
                 items: [{
                     item_id: productData.codigo || 'ecpf-a1',
                     item_name: productData.nome || 'e-CPF A1 (1 ano)',
                     item_category: 'Certificado Digital',
                     item_category2: productData.tipo || 'e-CPF',
                     item_category3: 'A1',
-                    price: productData.preco || 5.00,
+                    price: productData.preco || 8.00,
                     quantity: 1
                 }]
             }
@@ -115,14 +115,14 @@ export class GTMService {
             event: 'add_shipping_info',
             ecommerce: {
                 currency: 'BRL',
-                value: productData.preco || 5.00,
+                value: productData.preco || 8.00,
                 shipping_tier: 'videoconferencia',
                 items: [{
                     item_id: productData.codigo || 'ecpf-a1',
                     item_name: productData.nome || 'e-CPF A1 (1 ano)',
                     item_category: 'Certificado Digital',
                     item_category2: productData.tipo || 'e-CPF',
-                    price: productData.preco || 5.00,
+                    price: productData.preco || 8.00,
                     quantity: 1
                 }]
             }
@@ -145,7 +145,7 @@ export class GTMService {
             protocol_id: maskedProtocol,
             product_id: productData.codigo || '37341',
             product_name: productData.nome || 'e-CPF A1',
-            value: productData.preco || 5.00,
+            value: productData.preco || 8.00,
             currency: 'BRL',
             event_category: 'Checkout',
             event_label: 'Protocolo Safeweb Gerado'
@@ -179,14 +179,14 @@ export class GTMService {
             event: 'add_payment_info',
             ecommerce: {
                 currency: 'BRL',
-                value: paymentData.valor || productData.preco || 5.00,
+                value: paymentData.valor || productData.preco || 8.00,
                 payment_type: 'pix',
                 items: [{
                     item_id: productData.codigo || 'ecpf-a1',
                     item_name: productData.nome || 'e-CPF A1 (1 ano)',
                     item_category: 'Certificado Digital',
                     item_category2: productData.tipo || 'e-CPF',
-                    price: productData.preco || 5.00,
+                    price: productData.preco || 8.00,
                     quantity: 1
                 }]
             },
@@ -201,7 +201,7 @@ export class GTMService {
     trackPixCopied(valor) {
         this.pushEvent({
             event: 'pix_copied',
-            value: valor || 5.00,
+            value: valor || 8.00,
             currency: 'BRL',
             event_category: 'Checkout',
             event_label: 'PIX Copia e Cola'
@@ -227,7 +227,7 @@ export class GTMService {
             event: 'purchase',
             ecommerce: {
                 transaction_id: transactionId,
-                value: valor || productData.preco || 5.00,
+                value: valor || productData.preco || 8.00,
                 currency: 'BRL',
                 tax: 0,
                 shipping: 0,
@@ -237,7 +237,7 @@ export class GTMService {
                     item_category: 'Certificado Digital',
                     item_category2: productData.tipo || 'e-CPF',
                     item_category3: 'A1',
-                    price: productData.preco || 5.00,
+                    price: productData.preco || 8.00,
                     quantity: 1
                 }]
             },
@@ -266,7 +266,7 @@ export class GTMService {
         this.pushEvent({
             event: 'conversion',
             send_to: `AW-CONVERSION_ID/${conversionLabel}`, // Será configurado no GTM
-            value: conversionData.valor || 5.00,
+            value: conversionData.valor || 8.00,
             currency: 'BRL',
             transaction_id: conversionData.transactionId
         });

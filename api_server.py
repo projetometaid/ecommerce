@@ -42,11 +42,36 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Catálogo de produtos (source of truth para preços)
+PRODUCT_CATALOG = {
+    'ecpf-a1': {
+        'code': '001',
+        'description': 'Certificado Digital e-CPF A1 (1 ano)',
+        'price': 8.00,
+        'tipo': 'e-CPF',
+        'validade': 1  # anos
+    },
+    'ecpf-a3': {
+        'code': '002',
+        'description': 'Certificado Digital e-CPF A3 (3 anos)',
+        'price': 150.00,
+        'tipo': 'e-CPF',
+        'validade': 3
+    },
+    'ecnpj-a1': {
+        'code': '003',
+        'description': 'Certificado Digital e-CNPJ A1 (1 ano)',
+        'price': 200.00,
+        'tipo': 'e-CNPJ',
+        'validade': 1
+    }
+}
+
 
 class RateLimiter:
     """Rate Limiter simples baseado em IP"""
 
-    def __init__(self, max_requests=20, window_seconds=60):
+    def __init__(self, max_requests=200, window_seconds=60):
         """
         Args:
             max_requests: Número máximo de requisições permitidas
@@ -248,25 +273,72 @@ class Safe2PayAPI:
         return bool(self.token and self.api_url)
 
     def create_pix_payment(self, dados_checkout):
-        """Criar pagamento PIX Estático via Safe2Pay"""
+        """Criar pagamento PIX Dinâmico via Safe2Pay - Reutilizando dados já validados"""
 
-        # Validar dados de entrada
-        is_valid, erros = Validator.validate_checkout_data(dados_checkout)
-        if not is_valid:
-            logger.error(f"❌ Validação falhou: {erros}")
+        # Validação mínima - protocolo é obrigatório
+        if not dados_checkout.get('protocolo'):
+            logger.error("❌ Protocolo não fornecido")
             return {
                 'sucesso': False,
-                'erro': 'Dados inválidos',
-                'detalhes': erros
+                'erro': 'Protocolo é obrigatório'
             }
 
         try:
-            # Dados do pagamento PIX Estático
+            # Obter produto do catálogo
+            product_id = dados_checkout.get('product_id', 'ecpf-a1')
+            if product_id not in PRODUCT_CATALOG:
+                return {'sucesso': False, 'erro': 'Produto inválido'}
+
+            product = PRODUCT_CATALOG[product_id]
+            protocolo = dados_checkout.get('protocolo')
+
+            # Descrição máx 30 caracteres
+            description_short = product['description'][:30] if len(product['description']) > 30 else product['description']
+
+            # Limpar CPF e CEP - dados já foram validados na geração do protocolo
+            cpf_raw = str(dados_checkout.get('cpf', ''))
+            cpf = cpf_raw.replace('.', '').replace('-', '').replace(' ', '').strip()
+
+            cep_raw = str(dados_checkout.get('cep', ''))
+            cep = cep_raw.replace('-', '').replace(' ', '').strip()
+
+            logger.info(f"📋 Reutilizando dados validados:")
+            logger.info(f"   CPF: {cpf_raw} → {cpf}")
+            logger.info(f"   Nome: {dados_checkout.get('nome_completo', 'N/A')}")
+            logger.info(f"   Protocolo: {protocolo}")
+
+            # PIX DINÂMICO: Mesmo formato do lambda_handler.py
             payment_data = {
-                "Amount": 5.00,
-                "Description": "Certificado Digital e-CPF",
-                "Reference": f"ECPF-{datetime.now().strftime('%Y%m%d%H%M%S')}",
-                "CallbackUrl": self.callback_url
+                "IsSandbox": False,
+                "Application": "Certificado Digital",
+                "Vendor": "Certificado Campinas",
+                "CallbackUrl": self.callback_url,
+                "PaymentMethod": "6",  # PIX
+                "Reference": str(protocolo),
+                "Customer": {
+                    "Name": dados_checkout.get('nome_completo', 'Cliente'),
+                    "Identity": cpf,
+                    "Address": {
+                        "ZipCode": cep or "00000000",
+                        "Street": dados_checkout.get('endereco', 'Rua'),
+                        "Number": dados_checkout.get('numero', 'S/N'),
+                        "District": dados_checkout.get('bairro', 'Centro'),
+                        "CityName": dados_checkout.get('cidade', 'Cidade'),
+                        "StateInitials": dados_checkout.get('uf', 'SP'),
+                        "CountryName": "Brasil"
+                    }
+                },
+                "PaymentObject": {
+                    "Expiration": 1296000  # 15 dias (15 dias × 24h × 60min × 60s)
+                },
+                "Products": [
+                    {
+                        "Code": product['code'],
+                        "Description": description_short,
+                        "UnitPrice": product['price'],
+                        "Quantity": 1
+                    }
+                ]
             }
 
             headers = {
@@ -274,31 +346,15 @@ class Safe2PayAPI:
                 'X-API-KEY': self.token
             }
 
-            full_url = f"{self.api_url}/staticPix"
+            full_url = f"{self.api_url}/Payment"
 
-            logger.info(f"🌐 Criando PIX na Safe2Pay")
-            logger.info(f"📦 Reference: {payment_data['Reference']}")
-            logger.info(f"💰 Valor: R$ {payment_data['Amount']}")
-
-            # Fazer requisição para Safe2Pay com retry
-            max_retries = 2
-            for attempt in range(max_retries):
-                try:
-                    response = requests.post(
-                        full_url,
-                        json=payment_data,
-                        headers=headers,
-                        timeout=30
-                    )
-                    break
-                except requests.exceptions.Timeout:
-                    if attempt < max_retries - 1:
-                        logger.warning(f"⚠️ Timeout na tentativa {attempt + 1}, tentando novamente...")
-                        continue
-                    else:
-                        raise
-
-            logger.info(f"📥 Response Status: {response.status_code}")
+            # Criar PIX Dinâmico
+            response = requests.post(
+                full_url,
+                json=payment_data,
+                headers=headers,
+                timeout=10
+            )
 
             if response.status_code == 200 or response.status_code == 201:
                 result = response.json()
@@ -315,30 +371,33 @@ class Safe2PayAPI:
                     }
 
                 response_detail = result.get('ResponseDetail', {})
-                transaction_id = response_detail.get('Id')
+                payment_object = response_detail.get('PaymentObject', {})
 
-                logger.info(f"✅ PIX criado com sucesso!")
-                logger.info(f"   Transaction ID: {transaction_id}")
+                # LOG DETALHADO: Ver EXATAMENTE o que a Safe2Pay retornou
+                logger.info("=" * 60)
+                logger.info("📋 RESPOSTA COMPLETA DA SAFE2PAY:")
+                logger.info(f"   HasError: {result.get('HasError')}")
+                logger.info(f"   ResponseDetail keys: {list(response_detail.keys())}")
+                logger.info(f"   PaymentObject keys: {list(payment_object.keys())}")
+                logger.info(f"   PaymentObject.Key: {payment_object.get('Key', 'VAZIO')}")
+                logger.info(f"   PaymentObject.QrCode: {payment_object.get('QrCode', 'VAZIO')[:50]}...")
+                logger.info("=" * 60)
+
+                logger.info(f"✅ PIX Dinâmico criado com sucesso!")
+                logger.info(f"   Transaction ID: {response_detail.get('IdTransaction')}")
                 logger.info(f"   Cliente: {dados_checkout.get('nome_completo')}")
 
                 return {
                     'sucesso': True,
                     'dados': {
-                        'transactionId': str(transaction_id),
-                        'qrCode': response_detail.get('Key'),
-                        'qrCodeImage': response_detail.get('QrCode'),
-                        'pixCopiaECola': response_detail.get('Key'),
-                        'valor': 5.00,
+                        'transactionId': str(response_detail.get('IdTransaction')),
+                        'qrCode': response_detail.get('Key', ''),  # ← CORRIGIDO: está em ResponseDetail
+                        'qrCodeImage': response_detail.get('QrCode', ''),  # ← CORRIGIDO
+                        'pixCopiaECola': response_detail.get('Key', ''),  # ← CORRIGIDO
+                        'valor': product['price'],
                         'status': 'pending',
-                        'reference': payment_data['Reference'],
-                        'identifier': response_detail.get('Identifier'),
-                        'dadosCliente': {
-                            'nome': dados_checkout.get('nome_completo'),
-                            'cpf': dados_checkout.get('cpf'),
-                            'email': dados_checkout.get('email'),
-                            'telefone': dados_checkout.get('telefone')
-                        },
-                        'expiresAt': (datetime.now() + timedelta(minutes=self.pix_expiration)).isoformat()
+                        'reference': str(protocolo),
+                        'expiresAt': (datetime.now() + timedelta(minutes=30)).isoformat()
                     }
                 }
             else:
@@ -396,19 +455,30 @@ class Safe2PayAPI:
 
             logger.info(f"🔍 Verificando status da transação: {transaction_id}")
 
+            # Endpoint correto para consultar status usa api.safe2pay.com.br (não payment.safe2pay.com.br)
+            api_query_url = "https://api.safe2pay.com.br/v2"
             response = requests.get(
-                f"{self.api_url}/Payment/{transaction_id}",
+                f"{api_query_url}/transaction/get",
+                params={'id': transaction_id},
                 headers=headers,
                 timeout=30
             )
 
             if response.status_code == 200:
                 result = response.json()
-                status = result.get('PaymentStatus', 'unknown')
-                logger.info(f"✅ Status: {status}")
+                response_detail = result.get('ResponseDetail', {})
+                status_code = response_detail.get('Status', 'unknown')
+                status_message = response_detail.get('Message', 'unknown')
+
+                # Mapear código de status para texto
+                # 1=Pendente, 3=Autorizado (Pago), 16=Expirado, 6=Estornado
+                logger.info(f"✅ Status: {status_code} - {status_message}")
+
                 return {
                     'sucesso': True,
-                    'status': status,
+                    'status': status_message.lower() if status_message else 'unknown',
+                    'statusCode': status_code,
+                    'statusMessage': status_message,
                     'dados': result
                 }
             else:
@@ -702,8 +772,8 @@ class SafewebAPI:
             }
 
 
-# Instância global do Rate Limiter (20 req/min)
-rate_limiter = RateLimiter(max_requests=20, window_seconds=60)
+# Instância global do Rate Limiter (200 req/min)
+rate_limiter = RateLimiter(max_requests=200, window_seconds=60)
 
 
 class APIRequestHandler(http.server.BaseHTTPRequestHandler):

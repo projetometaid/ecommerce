@@ -105,7 +105,21 @@ export class Step5View {
             const img = new Image();
             img.crossOrigin = 'anonymous';
 
+            // CRÍTICO: Timeout para evitar travamento em conexões lentas
+            const IMAGE_LOAD_TIMEOUT = 5000; // 5 segundos (otimizado - se demorar mais, usa fallback)
+            let timeoutId = null;
+            let loaded = false;
+
+            timeoutId = setTimeout(() => {
+                if (!loaded) {
+                    console.warn(`⏱️ Timeout ao carregar imagem do QR Code (${IMAGE_LOAD_TIMEOUT}ms)`);
+                    reject(new Error('Timeout ao carregar imagem - usando fallback'));
+                }
+            }, IMAGE_LOAD_TIMEOUT);
+
             img.onload = () => {
+                loaded = true;
+                clearTimeout(timeoutId);
                 try {
                     // Criar canvas para processamento
                     const canvas = document.createElement('canvas');
@@ -151,13 +165,17 @@ export class Step5View {
             };
 
             img.onerror = (error) => {
+                loaded = true;
+                clearTimeout(timeoutId);
                 console.error('❌ Erro ao carregar imagem:', error);
                 reject(new Error('Falha ao carregar imagem do QR Code'));
             };
 
             // Tentar carregar via proxy do backend se necessário
+            // IMPORTANTE: Usar o mesmo hostname (localhost ou 127.0.0.1) para evitar CORS
+            const devApiUrl = `http://${window.location.hostname}:8082`;
             const proxyUrl = imageUrl.includes('safe2pay.com')
-                ? `http://localhost:8082/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
+                ? `${devApiUrl}/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
                 : imageUrl;
 
             img.src = proxyUrl;
@@ -236,6 +254,7 @@ export class Step5View {
             ];
 
             let currentCdnIndex = 0;
+            const CDN_TIMEOUT = 8000; // 8 segundos por CDN (importante para 3G/Edge)
 
             const tryLoadFromCdn = () => {
                 if (currentCdnIndex >= cdns.length) {
@@ -247,12 +266,29 @@ export class Step5View {
                 script.src = cdns[currentCdnIndex];
                 script.crossOrigin = 'anonymous';
 
+                let timeoutId = null;
+                let loaded = false;
+
+                // Timeout para conexões lentas (3G/Edge)
+                timeoutId = setTimeout(() => {
+                    if (!loaded) {
+                        console.warn(`⏱️ Timeout ao carregar CDN: ${cdns[currentCdnIndex]} (${CDN_TIMEOUT}ms)`);
+                        script.remove(); // Remover script que travou
+                        currentCdnIndex++;
+                        tryLoadFromCdn();
+                    }
+                }, CDN_TIMEOUT);
+
                 script.onload = () => {
+                    loaded = true;
+                    clearTimeout(timeoutId);
                     console.log(`✅ QRCode carregado do CDN: ${cdns[currentCdnIndex]}`);
                     resolve();
                 };
 
                 script.onerror = () => {
+                    loaded = true;
+                    clearTimeout(timeoutId);
                     console.warn(`⚠️ Falha ao carregar do CDN: ${cdns[currentCdnIndex]}`);
                     currentCdnIndex++;
                     tryLoadFromCdn();
@@ -292,43 +328,43 @@ export class Step5View {
         const valor = pagamentoData.valor || 0;
 
         paymentStatus.innerHTML = `
-            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 6px; padding: 8px 12px; margin: 6px 0; text-align: center;">
-                <div style="color: #155724; font-weight: 600; font-size: 12px; line-height: 1.4;">
+            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; padding: 6px 10px; margin: 4px 0; text-align: center;">
+                <div style="color: #155724; font-weight: 600; font-size: 11px; line-height: 1.3;">
                     📧 Enviamos no email todas orientações do seu pedido.
                 </div>
-                <div style="color: #155724; font-size: 11px; margin-top: 4px; line-height: 1.3;">
+                <div style="color: #155724; font-size: 10px; margin-top: 2px; line-height: 1.2;">
                     Você pode pagar agora ou fechar e seguir pelo email.
                 </div>
             </div>
-            <div style="text-align: center; margin: 6px 0 4px 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
+
+            <div id="payment-check-status" style="text-align: center; margin: 8px 0; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 <div class="spinner" style="
                     border: 2px solid #e0e0e0;
                     border-top: 2px solid #666;
                     border-radius: 50%;
-                    width: 16px;
-                    height: 16px;
+                    width: 14px;
+                    height: 14px;
                     animation: spin 1s linear infinite;
                 "></div>
-                <span style="color: #666; font-size: 13px; font-weight: 500;">Aguardando pagamento</span>
+                <span id="payment-check-text" style="color: #666; font-size: 12px; font-weight: 500;">Aguardando pagamento (0 segundos)</span>
             </div>
 
-            <!-- Botão de TESTE - Apenas para desenvolvimento -->
-            ${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? `
-            <div style="text-align: center; margin: 20px 0;">
-                <button id="btn-test-payment" style="
-                    background: #ff9800;
-                    color: white;
-                    border: none;
-                    padding: 12px 24px;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 14px;
-                ">
-                    🧪 TESTE: Simular Pagamento Aprovado
-                </button>
+            <!-- Alerta de suporte após 1m30s -->
+            <div id="payment-timeout-alert" style="display: none; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 8px 12px; margin: 8px 0; text-align: center;">
+                <div style="color: #856404; font-weight: 600; font-size: 12px; margin-bottom: 6px;">
+                    ⏱️ A tela parece estar travada?
+                </div>
+                <div style="color: #856404; font-size: 11px; margin-bottom: 8px;">
+                    Estamos aguardando o pagamento. Se já pagou, entre em contato.
+                </div>
+                <a href="https://wa.me/551940422204?text=Ol%C3%A1%2C%20realizei%20o%20pagamento%20do%20PIX%20mas%20a%20tela%20parece%20travada"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   style="display: inline-block; background: #25D366; color: white; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-weight: 600; font-size: 12px;">
+                    💬 Falar no WhatsApp
+                </a>
             </div>
-            ` : ''}
+
             <style>
                 @keyframes spin {
                     0% { transform: rotate(0deg); }

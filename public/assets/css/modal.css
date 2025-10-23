@@ -32,6 +32,7 @@
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
     transform: translateY(-20px);
     transition: transform var(--transition-normal);
 }
