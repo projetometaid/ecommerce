@@ -12,156 +12,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Certificado Digital sem complicações e com a confiança que você merece. Mais de 9.040 avaliações 5 estrelas.">
-    <meta name="keywords" content="certificado digital, certificado digital campinas, e-cpf, e-cnpj">
-    <meta name="author" content="Certificado Campinas">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Certificado Digital Online - Certificado Campinas">
-    <meta property="og:description" content="Certificado Digital sem complicações e com a confiança que você merece.">
-    <meta property="og:image" content="assets/images/logo_certificado_campinas.svg">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Certificado Digital Online - Certificado Campinas">
-    <meta name="twitter:description" content="Certificado Digital sem complicações e com a confiança que você merece.">
-    <meta name="twitter:image" content="assets/images/logo_certificado_campinas.svg">
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.certificadodigital.br.com/">
-
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#f89a1c">
-    <meta name="msapplication-TileColor" content="#f89a1c">
+    <title>Certificado Digital - Rápido, Simples e Seguro | Certificado Campinas</title>
 
     <!-- Favicons -->
-    <link rel="icon" type="image/x-icon" href="assets/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
-
-    <title>Certificado Digital Online - Site em Desenvolvimento</title>
+    <link rel="icon" type="image/x-icon" href="shared/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="shared/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="shared/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="shared/favicon/favicon-16x16.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Shared Page Styles -->
+    <link rel="stylesheet" href="shared/css/page.css">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Page-specific styles for landing page */
+        .hero-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 80px 0;
         }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f89a1c 0%, #ff6b35 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            padding: 20px;
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #1a1a1a;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
         }
 
-        .container {
-            max-width: 800px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 60px 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 48px;
+            font-weight: 300;
+            line-height: 1.6;
         }
 
-        .logo {
-            width: 200px;
-            height: auto;
-            margin-bottom: 30px;
-            filter: brightness(0) invert(1);
+        .products-section {
+            padding: 80px 0;
+            background: #fff;
         }
 
-        h1 {
-            font-size: 3rem;
+        .section-title {
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        p {
-            font-size: 1.2rem;
-            line-height: 1.8;
-            margin-bottom: 30px;
-            opacity: 0.95;
-        }
-
-        .products {
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .product-link {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 18px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .product-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .product-link.primary {
-            background: #fff;
-            color: #f89a1c;
-            border-color: #fff;
-        }
-
-        .product-link.primary:hover {
-            background: #fff;
-            color: #ff6b35;
-            transform: translateY(-3px) scale(1.05);
-        }
-
-        footer {
-            margin-top: 60px;
             text-align: center;
-            opacity: 0.8;
-            font-size: 0.9rem;
+            margin-bottom: 56px;
+            color: #1a1a1a;
         }
 
-        footer a {
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .product-description {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .product-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f89a1c;
+            margin-bottom: 24px;
+        }
+
+        .product-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #f89a1c 0%, #ff6b35 100%);
             color: #fff;
-            text-decoration: underline;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(248, 154, 28, 0.3);
         }
 
+        .product-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(248, 154, 28, 0.4);
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            h1 {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .hero-section {
+                padding: 48px 0;
+            }
+
+            .products-section {
+                padding: 48px 0;
+            }
+
+            .section-title {
                 font-size: 2rem;
+                margin-bottom: 32px;
             }
 
-            p {
-                font-size: 1rem;
-            }
-
-            .container {
-                padding: 40px 30px;
-            }
-
-            .logo {
-                width: 150px;
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
             }
         }
     </style>
@@ -172,58 +169,106 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    <div class="container">
-        <img src="assets/images/logo_certificado_campinas.svg" alt="Certificado Campinas" class="logo">
-
-        <h1>Site em Desenvolvimento</h1>
-
-        <p>
-            Estamos trabalhando em melhorias para oferecer a melhor experiência na compra do seu Certificado Digital.
-        </p>
-
-        <div class="products">
-            <a href="/ecpfa1" class="product-link primary">
-                Comprar e-CPF A1
-            </a>
-
-            <a href="#" class="product-link" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">
-                e-CNPJ A1 (Em breve)
-            </a>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="/">
+                        <img src="shared/images/logo_certificado_campinas.svg" alt="Certificado Campinas">
+                    </a>
+                </div>
+                <a href="https://wa.me/5519982567001" class="whatsapp-btn" target="_blank" rel="noopener noreferrer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                    </svg>
+                    <span class="whatsapp-text">Fale Conosco</span>
+                </a>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <footer>
-        <p>
-            Certificado Campinas - CNPJ: 24.398.727/0001-37 |
-            DPN C.Camp - AC Safeweb
-            <a href="https://certificadodigital.sirv.com/legal/dpn-ac-safeweb-cd.pdf" target="_blank" rel="noopener noreferrer">CD</a> e
-            <a href="https://certificadodigital.sirv.com/legal/dpn-ac-safeweb-rfb.pdf" target="_blank" rel="noopener noreferrer">RFB</a>
-        </p>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div style="text-align: center; max-width: 900px; margin: 0 auto;">
+                <h1 class="hero-title">Rápido, Simples e Seguro!</h1>
+                <p class="hero-subtitle">Seu certificado digital sem complicações e com a confiança que você merece</p>
+
+                <!-- Google Reviews Card -->
+                <div class="reviews-card" style="max-width: 600px; margin: 0 auto;">
+                    <div class="reviews-head">
+                        <div class="brand-stack">
+                            <div class="brandline">
+                                <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+                                     alt="Google" class="google-logo">
+                                <h2 class="brand-text">Reviews</h2>
+                            </div>
+                            <div class="stars-row">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <p class="reviews-sub">Baseado em 9.040+ avaliações</p>
+                        </div>
+                        <div class="score-stack">
+                            <p class="score">5.0</p>
+                            <p class="score-sub">Nota média</p>
+                        </div>
+                    </div>
+                    <a href="#produtos" class="cta-button">
+                        <span class="online-indicator"></span>
+                        <span>Comprar Agora</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="produtos" class="products-section">
+        <div class="container">
+            <h2 class="section-title">Nossos Produtos</h2>
+            <div class="products-grid">
+                <!-- e-CPF A1 -->
+                <div class="product-card">
+                    <div class="product-icon">📄</div>
+                    <h3 class="product-name">e-CPF A1</h3>
+                    <p class="product-description">Certificado digital para pessoa física, armazenado em computador. Validade de 1 ano.</p>
+                    <div class="product-price">R$ 139,00</div>
+                    <a href="/ecpfa1/" class="product-btn">Comprar Agora</a>
+                </div>
+
+                <!-- e-CNPJ A1 -->
+                <div class="product-card">
+                    <div class="product-icon">🏢</div>
+                    <h3 class="product-name">e-CNPJ A1</h3>
+                    <p class="product-description">Certificado digital para pessoa jurídica, armazenado em computador. Validade de 1 ano.</p>
+                    <div class="product-price">R$ 219,00</div>
+                    <a href="#" class="product-btn" style="opacity: 0.6; cursor: not-allowed;">Em Breve</a>
+                </div>
+
+                <!-- e-CPF A3 -->
+                <div class="product-card">
+                    <div class="product-icon">🔐</div>
+                    <h3 class="product-name">e-CPF A3</h3>
+                    <p class="product-description">Certificado digital com maior segurança, armazenado em token ou cartão. Validade de até 3 anos.</p>
+                    <div class="product-price">R$ 279,00</div>
+                    <a href="#" class="product-btn" style="opacity: 0.6; cursor: not-allowed;">Em Breve</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">
+                © 2024 Certificado Campinas - CNPJ: 00.000.000/0001-00 - Todos os direitos reservados
+            </p>
+        </div>
     </footer>
-
-    <!-- Schema.org Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Certificado Campinas",
-        "image": "https://www.certificadodigital.br.com/assets/images/logo_certificado_campinas.svg",
-        "@id": "https://www.certificadodigital.br.com",
-        "url": "https://www.certificadodigital.br.com",
-        "telephone": "+5519997888810",
-        "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Campinas",
-            "addressRegion": "SP",
-            "addressCountry": "BR"
-        },
-        "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "5",
-            "reviewCount": "9040"
-        },
-        "priceRange": "$$"
-    }
-    </script>
 </body>
 </html>
